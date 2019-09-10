@@ -1,0 +1,2 @@
+include ':app'
+rootProject.name='Wind Speed Deduction Tool'
