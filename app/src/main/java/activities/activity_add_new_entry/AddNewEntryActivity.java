@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -29,6 +30,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     private RadioGroup radioGroupWindowsDamage;
     private RadioGroup radioGroupWallsDamage;
     private Button buttonAddNewEntry;
+    private ImageButton imageButtonAttachPhoto;
 
     private BroadcastReceiver broadcastReceiver;
 
@@ -50,6 +52,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         radioGroupWindowsDamage = findViewById(R.id.radio_group_WindowsDamage);
         radioGroupWallsDamage = findViewById(R.id.radio_group_WallsDamage);
         buttonAddNewEntry = findViewById(R.id.button_AddNewEntry);
+        imageButtonAttachPhoto = findViewById(R.id.image_button_AttachPhoto);
 
         final String[] roofDmg = new String[1];
         final String[] windowsDmg = new String[1];
@@ -64,25 +67,36 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
             }
         });
 
+        //there is a stupid bug in the framework in which when calling clearCheck(),
+        //setOnCheckedChangeListener is called twice, but by the second time it is called,
+        //rb loses reference to the checked button because its selection was just cleared,
+        //and so, a null check is done first to make sure the one-element String array gets the button's text
+        //smh Google, you're a shame
         radioGroupRoofDamage.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 RadioButton rb = findViewById(i);
-                roofDmg[0] = rb.getText().toString();
+                if(rb != null && rb.isChecked()){
+                    roofDmg[0] = rb.getText().toString();
+                }
             }
         });
         radioGroupWindowsDamage.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 RadioButton rb = findViewById(i);
-                windowsDmg[0] = rb.getText().toString();
+                if(rb != null && rb.isChecked()){
+                    windowsDmg[0] = rb.getText().toString();
+                }
             }
         });
         radioGroupWallsDamage.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 RadioButton rb = findViewById(i);
-                wallsDmg[0] = rb.getText().toString();
+                if(rb != null && rb.isChecked()){
+                    wallsDmg[0] = rb.getText().toString();
+                }
             }
         });
 
@@ -102,9 +116,22 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                     Toast.makeText(AddNewEntryActivity.this, "Fail to Add New Entry", Toast.LENGTH_SHORT).show();
                 }
 
-                //TODO: uncheck radio buttons
+                deselectRadioGroups();
             }
         });
+
+        imageButtonAttachPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(AddNewEntryActivity.this, "SHOULD BE OPENING NEW ACTIVITY NOW", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void deselectRadioGroups() {
+        radioGroupRoofDamage.clearCheck();
+        radioGroupWindowsDamage.clearCheck();
+        radioGroupWallsDamage.clearCheck();
     }
 
     @Override

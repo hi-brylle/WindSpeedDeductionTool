@@ -5,24 +5,33 @@
     android:layout_height="match_parent"
     tools:context="activities.activity_add_new_entry.AddNewEntryActivity">
 
-    <include
-        android:id="@+id/header_long_lat"
-        layout="@layout/header_long_lat" />
+    <Button
+        android:id="@+id/button_AddNewEntry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header_long_lat"
+        android:layout_centerInParent="true"
+        android:text="Add New Entry"
+        android:textAllCaps="false"
+        android:textSize="20sp" />
+
+    <ImageButton
+        android:id="@+id/image_button_AttachPhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/linear_layout_DamagesRadioGroups"
+        android:layout_margin="10dp"
+        android:src="@drawable/photo_camera" />
 
     <include
         android:id="@+id/linear_layout_DamagesRadioGroups"
         layout="@layout/content_damage_radio_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/header_long_lat" />
+        android:layout_below="@id/button_AddNewEntry" />
 
-    <Button
-        android:id="@+id/button_AddNewEntry"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/linear_layout_DamagesRadioGroups"
-        android:text="Add New Entry"
-        android:textAllCaps="false"
-        android:textSize="20sp" />
+    <include
+        android:id="@+id/header_long_lat"
+        layout="@layout/header_long_lat" />
 
 </RelativeLayout>
