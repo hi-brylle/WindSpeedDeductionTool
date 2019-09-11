@@ -7,8 +7,8 @@ public interface IAddNewEntryActivityMVP {
 
     interface IAddNewEntryActivityPresenter{
         void updateCurrentLongLat(double longitude, double latitude);
-        void getDamageDescriptions(String roofDmg, String windowsDmg, String wallsDmg);
-        void getBitmapByteArrays(byte[][] byteArrayArray);
+        void setDamageDescriptions(String roofDmg, String windowsDmg, String wallsDmg);
+        void setByteArrayArray(byte[][] byteArrayArray);
         boolean passDataToDBHelper();
         void dumpVariables();
     }

@@ -10,15 +10,15 @@ public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAd
     private Double longitude;
     private Double latitude;
 
-    //qualitative descriptions of damages per component
+    //qualitative descriptions of damages per structural component
     private String roofDamageDesc;
     private String windowsDamageDesc;
     private String wallsDamageDesc;
 
     private byte[][] byteArrayArray;
 
-    public AddNewEntryActivityPresenter(IAddNewEntryActivityMVP.IAddNewEntryActivityView mvpView,
-                                        IAddNewEntryActivityMVP.IAddNewEntryActivityModel mvpModel){
+    AddNewEntryActivityPresenter(IAddNewEntryActivityMVP.IAddNewEntryActivityView mvpView,
+                                 IAddNewEntryActivityMVP.IAddNewEntryActivityModel mvpModel){
         this.mvpView = mvpView;
         this.mvpModel = mvpModel;
     }
@@ -33,14 +33,14 @@ public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAd
     }
 
     @Override
-    public void getDamageDescriptions(String roofDmg, String windowsDmg, String wallsDmg) {
+    public void setDamageDescriptions(String roofDmg, String windowsDmg, String wallsDmg) {
         roofDamageDesc = roofDmg;
         windowsDamageDesc = windowsDmg;
         wallsDamageDesc = wallsDmg;
     }
 
     @Override
-    public void getBitmapByteArrays(byte[][] byteArrayArray) {
+    public void setByteArrayArray(byte[][] byteArrayArray) {
         this.byteArrayArray = byteArrayArray;
     }
 
@@ -57,7 +57,7 @@ public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAd
         byteArrayArray = null;
     }
 
-    public void addGPSFixListener(IGPSFixListener listener){
+    void addGPSFixListener(IGPSFixListener listener){
         gpsFixListener = listener;
     }
 

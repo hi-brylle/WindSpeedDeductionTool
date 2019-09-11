@@ -35,7 +35,6 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     private RadioGroup radioGroupWindowsDamage;
     private RadioGroup radioGroupWallsDamage;
     private Button buttonAddNewEntry;
-    private ImageButton imageButtonAttachPhoto;
 
     private BroadcastReceiver broadcastReceiver;
 
@@ -60,7 +59,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         radioGroupWindowsDamage = findViewById(R.id.radio_group_WindowsDamage);
         radioGroupWallsDamage = findViewById(R.id.radio_group_WallsDamage);
         buttonAddNewEntry = findViewById(R.id.button_AddNewEntry);
-        imageButtonAttachPhoto = findViewById(R.id.image_button_AttachPhoto);
+        ImageButton imageButtonAttachPhoto = findViewById(R.id.image_button_AttachPhoto);
 
         final String[] roofDmg = new String[1];
         final String[] windowsDmg = new String[1];
@@ -111,7 +110,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         buttonAddNewEntry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mPresenter.getDamageDescriptions(roofDmg[0], windowsDmg[0], wallsDmg[0]);
+                mPresenter.setDamageDescriptions(roofDmg[0], windowsDmg[0], wallsDmg[0]);
 
                 //there's no need to inject coordinates since
                 //the broadcast receiver continually updates the presenter
@@ -125,18 +124,17 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                         byteArrayArray[i] = stream.toByteArray();
                     }
 
-                    mPresenter.getBitmapByteArrays(byteArrayArray);
+                    mPresenter.setByteArrayArray(byteArrayArray);
                 }
 
                 if(mPresenter.passDataToDBHelper()){
                     Toast.makeText(AddNewEntryActivity.this, "New Entry Added", Toast.LENGTH_SHORT).show();
                 } else{
-                    Toast.makeText(AddNewEntryActivity.this, "Fail to Add New Entry", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddNewEntryActivity.this, "Failed to Add New Entry", Toast.LENGTH_SHORT).show();
                 }
 
                 deselectRadioGroups();
                 photoBitmaps = null;
-
                 mPresenter.dumpVariables();
             }
         });
@@ -159,6 +157,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(resultCode == RESULT_OK && requestCode == CAMERA_REQUEST){
+            assert data != null;
             Bitmap bmp = (Bitmap) data.getExtras().get("data");
             if(photoBitmaps == null){
                 photoBitmaps = new ArrayList<>();

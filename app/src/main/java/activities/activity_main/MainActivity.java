@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -38,7 +37,6 @@ public class MainActivity extends AppCompatActivity implements IMainActivityMVP.
 
     private MainActivityPresenter mPresenter;
 
-    private Button buttonNew;
     private TextView textViewLongitude;
     private TextView textViewLatitude;
 
@@ -58,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements IMainActivityMVP.
     protected void onStart() {
         super.onStart();
 
-        buttonNew = findViewById(R.id.button_New);
+        Button buttonNew = findViewById(R.id.button_New);
         textViewLongitude = findViewById(R.id.text_view_CurrentLongitude);
         textViewLatitude = findViewById(R.id.text_view_CurrentLatitude);
 
@@ -113,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements IMainActivityMVP.
         if (!missingPermissions.isEmpty()) {
             // request all missing permissions
             final String[] permissions = missingPermissions
-                    .toArray(new String[missingPermissions.size()]);
+                    .toArray(new String[0]);
             ActivityCompat.requestPermissions(this, permissions, ALL_PERMISSIONS_REQUEST_CODE);
         } else {
             final int[] grantResults = new int[REQUIRED_PERMISSIONS.length];

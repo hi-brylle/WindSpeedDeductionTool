@@ -51,16 +51,9 @@ public class DBHelper extends SQLiteOpenHelper implements IAddNewEntryActivityMV
 
     private boolean insert(double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg){
         SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues cv = new ContentValues();
 
         long currentTime = System.currentTimeMillis();
-
-        cv.put(COLUMN_LONGITUDE, longitude);
-        cv.put(COLUMN_LATITUDE, latitude);
-        cv.put(COLUMN_UNIX_TIME, currentTime);
-        cv.put(COLUMN_ROOF_DAMAGE, roofDmg);
-        cv.put(COLUMN_WINDOWS_DAMAGE, windowsDmg);
-        cv.put(COLUMN_WALLS_DAMAGE, wallsDmg);
+        ContentValues cv = fillContentValues(currentTime, longitude, latitude, roofDmg, windowsDmg, wallsDmg);
 
         long result = db.insert(TABLE_NAME_INPUTS, null, cv);
 
@@ -72,16 +65,9 @@ public class DBHelper extends SQLiteOpenHelper implements IAddNewEntryActivityMV
             return insert(longitude, latitude, roofDmg, windowsDmg, wallsDmg);
         } else{
             SQLiteDatabase db = this.getWritableDatabase();
-            ContentValues cv = new ContentValues();
 
             long currentTime = System.currentTimeMillis();
-
-            cv.put(COLUMN_LONGITUDE, longitude);
-            cv.put(COLUMN_LATITUDE, latitude);
-            cv.put(COLUMN_UNIX_TIME, currentTime);
-            cv.put(COLUMN_ROOF_DAMAGE, roofDmg);
-            cv.put(COLUMN_WINDOWS_DAMAGE, windowsDmg);
-            cv.put(COLUMN_WALLS_DAMAGE, wallsDmg);
+            ContentValues cv = fillContentValues(currentTime, longitude, latitude, roofDmg, windowsDmg, wallsDmg);
 
             String uniquePhotosTableName = "photos_table_" + currentTime;
             cv.put(COLUMN_PHOTOS_TABLE_NAME, uniquePhotosTableName);
@@ -94,7 +80,7 @@ public class DBHelper extends SQLiteOpenHelper implements IAddNewEntryActivityMV
         }
     }
 
-    long insert(byte [][] byteArrayArray, String uniquePhotosTableName){
+    private long insert(byte [][] byteArrayArray, String uniquePhotosTableName){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
@@ -123,6 +109,19 @@ public class DBHelper extends SQLiteOpenHelper implements IAddNewEntryActivityMV
         }
 
         return results[0];
+    }
+
+    ContentValues fillContentValues(long currentTime, double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg){
+        ContentValues cv = new ContentValues();
+
+        cv.put(COLUMN_LONGITUDE, longitude);
+        cv.put(COLUMN_LATITUDE, latitude);
+        cv.put(COLUMN_UNIX_TIME, currentTime);
+        cv.put(COLUMN_ROOF_DAMAGE, roofDmg);
+        cv.put(COLUMN_WINDOWS_DAMAGE, windowsDmg);
+        cv.put(COLUMN_WALLS_DAMAGE, wallsDmg);
+
+        return cv;
     }
 
     @Override
