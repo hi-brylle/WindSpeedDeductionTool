@@ -1,11 +1,13 @@
 package activities.activity_add_new_entry;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,6 +19,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.windspeeddeductiontool.R;
+
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 
 import helper_classes.DBHelper;
 
@@ -33,6 +38,9 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     private ImageButton imageButtonAttachPhoto;
 
     private BroadcastReceiver broadcastReceiver;
+
+    private static final int CAMERA_REQUEST = 17;
+    ArrayList<Bitmap> photoBitmaps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,12 +111,22 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         buttonAddNewEntry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mPresenter.fetchDamageDescriptions(roofDmg[0], windowsDmg[0], wallsDmg[0]);
+                mPresenter.getDamageDescriptions(roofDmg[0], windowsDmg[0], wallsDmg[0]);
 
                 //there's no need to inject coordinates since
                 //the broadcast receiver continually updates the presenter
 
-                mPresenter.logFetches();
+                if(photoBitmaps != null && photoBitmaps.size() > 0){
+                    Log.d("MY TAG (ADD NEW)", "# bitmaps: " + photoBitmaps.size());
+                    byte[][] byteArrayArray = new byte[photoBitmaps.size()][];
+                    for(int i = 0; i < photoBitmaps.size(); i++){
+                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                        photoBitmaps.get(i).compress(Bitmap.CompressFormat.PNG, 100, stream);
+                        byteArrayArray[i] = stream.toByteArray();
+                    }
+
+                    mPresenter.getBitmapByteArrays(byteArrayArray);
+                }
 
                 if(mPresenter.passDataToDBHelper()){
                     Toast.makeText(AddNewEntryActivity.this, "New Entry Added", Toast.LENGTH_SHORT).show();
@@ -117,15 +135,36 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                 }
 
                 deselectRadioGroups();
+                photoBitmaps = null;
+
+                mPresenter.dumpVariables();
             }
         });
 
         imageButtonAttachPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(AddNewEntryActivity.this, "SHOULD BE OPENING NEW ACTIVITY NOW", Toast.LENGTH_SHORT).show();
+                takePhoto();
+                //TODO: put into image view, i guess
             }
         });
+    }
+
+
+    private void takePhoto() {
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(cameraIntent, CAMERA_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(resultCode == RESULT_OK && requestCode == CAMERA_REQUEST){
+            Bitmap bmp = (Bitmap) data.getExtras().get("data");
+            if(photoBitmaps == null){
+                photoBitmaps = new ArrayList<>();
+            }
+            photoBitmaps.add(bmp);
+        }
     }
 
     private void deselectRadioGroups() {
@@ -143,8 +182,6 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                 public void onReceive(Context context, Intent intent) {
                     double longitude = (double) intent.getExtras().get("longitude");
                     double latitude = (double) intent.getExtras().get("latitude");
-                    Log.d("MY TAG (ADD_NEW)", String.valueOf(longitude));
-                    Log.d("MY TAG (ADD_NEW)", String.valueOf(latitude));
                     textViewLongitude.setText("Longitude: " + longitude);
                     textViewLatitude.setText("Latitude: " + latitude);
 

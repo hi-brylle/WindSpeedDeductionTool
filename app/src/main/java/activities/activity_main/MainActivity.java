@@ -30,7 +30,8 @@ import helper_classes.LocationService;
 public class MainActivity extends AppCompatActivity implements IMainActivityMVP.IMainActivityView {
 
     private static final String[] REQUIRED_PERMISSIONS = new String[] {
-        Manifest.permission.ACCESS_FINE_LOCATION
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.CAMERA
         //add more permissions here when needed
     };
     private static final int ALL_PERMISSIONS_REQUEST_CODE = 17;
@@ -78,8 +79,6 @@ public class MainActivity extends AppCompatActivity implements IMainActivityMVP.
                 public void onReceive(Context context, Intent intent) {
                     double longitude = (double) intent.getExtras().get("longitude");
                     double latitude = (double) intent.getExtras().get("latitude");
-                    Log.d("MY TAG (MAIN)", String.valueOf(longitude));
-                    Log.d("MY TAG (MAIN)", String.valueOf(latitude));
                     textViewLongitude.setText("Longitude: " + longitude);
                     textViewLatitude.setText("Latitude: " + latitude);
                 }

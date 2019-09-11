@@ -7,12 +7,13 @@ public interface IAddNewEntryActivityMVP {
 
     interface IAddNewEntryActivityPresenter{
         void updateCurrentLongLat(double longitude, double latitude);
-        void fetchDamageDescriptions(String roofDmg, String windowsDmg, String wallsDmg);
-        void logFetches();
+        void getDamageDescriptions(String roofDmg, String windowsDmg, String wallsDmg);
+        void getBitmapByteArrays(byte[][] byteArrayArray);
         boolean passDataToDBHelper();
+        void dumpVariables();
     }
 
     interface IAddNewEntryActivityModel{
-        boolean insertToDB(double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg);
+        boolean insertToDB(double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg, byte[][] byteArrayArray);
     }
 }

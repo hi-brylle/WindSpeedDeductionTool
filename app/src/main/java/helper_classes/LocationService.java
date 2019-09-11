@@ -10,7 +10,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -30,8 +29,6 @@ public class LocationService extends Service {
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                Log.d("MY TAG (SERVICE)", String.valueOf(location.getLongitude()));
-                Log.d("MY TAG (SERVICE)", String.valueOf(location.getLatitude()));
                 Intent intent = new Intent("location_updates");
                 intent.putExtra("longitude", location.getLongitude());
                 intent.putExtra("latitude", location.getLatitude());

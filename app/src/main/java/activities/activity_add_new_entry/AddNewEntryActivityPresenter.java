@@ -1,7 +1,5 @@
 package activities.activity_add_new_entry;
 
-import android.util.Log;
-
 public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAddNewEntryActivityPresenter {
     private IAddNewEntryActivityMVP.IAddNewEntryActivityView mvpView;
     private IAddNewEntryActivityMVP.IAddNewEntryActivityModel mvpModel;
@@ -16,6 +14,8 @@ public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAd
     private String roofDamageDesc;
     private String windowsDamageDesc;
     private String wallsDamageDesc;
+
+    private byte[][] byteArrayArray;
 
     public AddNewEntryActivityPresenter(IAddNewEntryActivityMVP.IAddNewEntryActivityView mvpView,
                                         IAddNewEntryActivityMVP.IAddNewEntryActivityModel mvpModel){
@@ -33,24 +33,28 @@ public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAd
     }
 
     @Override
-    public void fetchDamageDescriptions(String roofDmg, String windowsDmg, String wallsDmg) {
+    public void getDamageDescriptions(String roofDmg, String windowsDmg, String wallsDmg) {
         roofDamageDesc = roofDmg;
         windowsDamageDesc = windowsDmg;
         wallsDamageDesc = wallsDmg;
     }
 
     @Override
-    public void logFetches() {
-        Log.d("MY TAG (ADD_NEW_P)", "Long: " + longitude);
-        Log.d("MY TAG (ADD_NEW_P)", "Lat: " + latitude);
-        Log.d("MY TAG (ADD_NEW_P)", "roof: " + roofDamageDesc);
-        Log.d("MY TAG (ADD_NEW_P)", "windows: " + windowsDamageDesc);
-        Log.d("MY TAG (ADD_NEW_P)", "walls: " + wallsDamageDesc);
+    public void getBitmapByteArrays(byte[][] byteArrayArray) {
+        this.byteArrayArray = byteArrayArray;
     }
 
     @Override
     public boolean passDataToDBHelper() {
-        return mvpModel.insertToDB(longitude, latitude, roofDamageDesc, windowsDamageDesc, wallsDamageDesc);
+        return mvpModel.insertToDB(longitude, latitude, roofDamageDesc, windowsDamageDesc, wallsDamageDesc, byteArrayArray);
+    }
+
+    @Override
+    public void dumpVariables() {
+        roofDamageDesc = null;
+        windowsDamageDesc = null;
+        wallsDamageDesc = null;
+        byteArrayArray = null;
     }
 
     public void addGPSFixListener(IGPSFixListener listener){
