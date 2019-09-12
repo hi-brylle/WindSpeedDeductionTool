@@ -113,21 +113,21 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
         return cv;
     }
 
-    int getCurrentRowID(){
+    private int getCurrentRowID(){
         SQLiteDatabase db = this.getWritableDatabase();
-
         String SQL_GET_LAST_ROW_ID = "select ROWID from " + TABLE_NAME_INPUTS + " order by ROWID DESC limit 1";
         Cursor c = db.rawQuery(SQL_GET_LAST_ROW_ID, null);
+
         long lastID = 0;
-        if(c != null && c.moveToFirst()){
-            lastID = c.getLong(0);
-        }
-        Log.d("MY TAG (DB HELPER)", "LAST ROW ID: " + lastID);
+        c.moveToFirst();
+        lastID = c.getLong(0);
+
+        c.close();
 
         return (int) lastID++;
     }
 
-    String getCurrentPhotosTableName(){
+    private String getCurrentPhotosTableName(){
         SQLiteDatabase db = this.getWritableDatabase();
         String SQL_GET_TABLE_NAMES = "SELECT " + COLUMN_PHOTOS_TABLE_NAME + " FROM " + TABLE_NAME_INPUTS;
         Cursor c = db.rawQuery(SQL_GET_TABLE_NAMES, null);
@@ -135,6 +135,8 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
         String columnName;
         c.moveToLast();
         columnName = c.getString(c.getColumnIndex(COLUMN_PHOTOS_TABLE_NAME));
+
+        c.close();
 
         return columnName;
     }
