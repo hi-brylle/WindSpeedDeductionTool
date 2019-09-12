@@ -77,7 +77,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         //there is a stupid bug in the framework in which when calling clearCheck(),
         //setOnCheckedChangeListener is called twice, but by the second time it is called,
         //rb loses reference to the checked button because its selection was just cleared,
-        //and so, a null check is done first to make sure the one-element String array gets the button's text
+        //and so, a null check is done first
         //smh Google, you're a shame
         radioGroupRoofDamage.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override

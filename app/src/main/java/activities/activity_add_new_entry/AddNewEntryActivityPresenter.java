@@ -12,7 +12,7 @@ public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAd
 
     private IGPSFixListener gpsFixListener;
 
-    //"Double" is a non-primitive type and thus can be null
+    //"Double" is a non-primitive type and thus can be null, not 0
     //used to check if gps has gotten a fix yet
     private Double longitude;
     private Double latitude;
@@ -41,7 +41,7 @@ public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAd
     @Override
     public void createEntryModel(HashMap<String, String> componentToDmgDescriptions, byte[][] byteArrayArray) {
         EntryModelFactory modelFactory = new EntryModelFactory();
-        setMvpModel(modelFactory.entryModelFactory(longitude, latitude, componentToDmgDescriptions, byteArrayArray));
+        setMvpModel(modelFactory.getEntryModel(longitude, latitude, componentToDmgDescriptions, byteArrayArray));
     }
 
     void addGPSFixListener(IGPSFixListener listener){

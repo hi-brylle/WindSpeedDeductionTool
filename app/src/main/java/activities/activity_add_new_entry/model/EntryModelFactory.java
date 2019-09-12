@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class EntryModelFactory {
 
-    public EntryModel entryModelFactory(double longitude, double latitude, HashMap<String, String> componentToDmgDescriptions, byte[][] byteArrayArray){
+    public EntryModel getEntryModel(double longitude, double latitude, HashMap<String, String> componentToDmgDescriptions, byte[][] byteArrayArray){
         if(byteArrayArray != null){
             return new EntryModelHasPhotos(longitude, latitude, componentToDmgDescriptions, byteArrayArray);
         } else {

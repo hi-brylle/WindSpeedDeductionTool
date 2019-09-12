@@ -2,6 +2,7 @@ package helper_classes.db_helper;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -50,8 +51,7 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
     private boolean insert(double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg){
         SQLiteDatabase db = this.getWritableDatabase();
 
-        long currentTime = System.currentTimeMillis();
-        ContentValues cv = fillContentValues(currentTime, longitude, latitude, roofDmg, windowsDmg, wallsDmg);
+        ContentValues cv = fillContentValues(longitude, latitude, roofDmg, windowsDmg, wallsDmg);
 
         long result = db.insert(TABLE_NAME_INPUTS, null, cv);
 
@@ -59,22 +59,14 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
     }
 
     private boolean insert(double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg, byte[][] byteArrayArray){
-        SQLiteDatabase db = this.getWritableDatabase();
+        boolean result1 = insert(longitude, latitude, roofDmg, windowsDmg, wallsDmg);
 
-        long currentTime = System.currentTimeMillis();
-        ContentValues cv = fillContentValues(currentTime, longitude, latitude, roofDmg, windowsDmg, wallsDmg);
+        long result2 = insertPhotoBLOB(byteArrayArray);
 
-        String uniquePhotosTableName = "photos_table_" + currentTime;
-        cv.put(COLUMN_PHOTOS_TABLE_NAME, uniquePhotosTableName);
-        //TODO: trim this function by changing dependency upon current time
-        long result1 = db.insert(TABLE_NAME_INPUTS, null, cv);
-
-        long result2 = insertPhotoBLOB(byteArrayArray , uniquePhotosTableName);
-
-        return result1 != -1 && result2 != -1;
+        return result1 && result2 != -1;
     }
 
-    private long insertPhotoBLOB(byte [][] byteArrayArray, String uniquePhotosTableName){
+    private long insertPhotoBLOB(byte [][] byteArrayArray){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
@@ -82,7 +74,7 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
         final String column_photos = "photos";
 
         String SQL_CREATE_PHOTOS_TABLE = "create table " +
-                uniquePhotosTableName + " (" +
+                getCurrentPhotosTableName() + " (" +
                 column_id + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 column_photos + " BLOB" +
                 ")";
@@ -93,7 +85,7 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
         Log.d("MY TAG (DB)", "bAA size: " + byteArrayArray.length);
         for(int i = 0; i < byteArrayArray.length; i++){
             cv.put(column_photos, byteArrayArray[i]);
-            results[i] = db.insert(uniquePhotosTableName, null, cv);
+            results[i] = db.insert(getCurrentPhotosTableName(), null, cv);
         }
 
         for(int i = 0; i < byteArrayArray.length; i++){
@@ -105,8 +97,10 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
         return results[0];
     }
 
-    private ContentValues fillContentValues(long currentTime, double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg){
+    private ContentValues fillContentValues(double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg){
         ContentValues cv = new ContentValues();
+
+        long currentTime = System.currentTimeMillis();
 
         cv.put(COLUMN_LONGITUDE, longitude);
         cv.put(COLUMN_LATITUDE, latitude);
@@ -114,8 +108,35 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
         cv.put(COLUMN_ROOF_DAMAGE, roofDmg);
         cv.put(COLUMN_WINDOWS_DAMAGE, windowsDmg);
         cv.put(COLUMN_WALLS_DAMAGE, wallsDmg);
+        cv.put(COLUMN_PHOTOS_TABLE_NAME, "photos_for_id_" + getCurrentRowID());
 
         return cv;
+    }
+
+    int getCurrentRowID(){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        String SQL_GET_LAST_ROW_ID = "select ROWID from " + TABLE_NAME_INPUTS + " order by ROWID DESC limit 1";
+        Cursor c = db.rawQuery(SQL_GET_LAST_ROW_ID, null);
+        long lastID = 0;
+        if(c != null && c.moveToFirst()){
+            lastID = c.getLong(0);
+        }
+        Log.d("MY TAG (DB HELPER)", "LAST ROW ID: " + lastID);
+
+        return (int) lastID++;
+    }
+
+    String getCurrentPhotosTableName(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String SQL_GET_TABLE_NAMES = "SELECT " + COLUMN_PHOTOS_TABLE_NAME + " FROM " + TABLE_NAME_INPUTS;
+        Cursor c = db.rawQuery(SQL_GET_TABLE_NAMES, null);
+
+        String columnName;
+        c.moveToLast();
+        columnName = c.getString(c.getColumnIndex(COLUMN_PHOTOS_TABLE_NAME));
+
+        return columnName;
     }
 
     @Override
