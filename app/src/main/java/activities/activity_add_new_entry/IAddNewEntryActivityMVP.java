@@ -1,19 +1,21 @@
 package activities.activity_add_new_entry;
 
+import java.util.HashMap;
+
+import helper_classes.db_helper.IDBHelper;
+
 public interface IAddNewEntryActivityMVP {
     interface IAddNewEntryActivityView{
-
+        void showToastOnDBInsert(boolean success);
     }
 
     interface IAddNewEntryActivityPresenter{
         void updateCurrentLongLat(double longitude, double latitude);
-        void setDamageDescriptions(String roofDmg, String windowsDmg, String wallsDmg);
-        void setByteArrayArray(byte[][] byteArrayArray);
-        boolean passDataToDBHelper();
-        void dumpVariables();
+        boolean passDataToDBHelper(HashMap<String, String> componentToDmgDescriptions, byte[][] byteArrayArray);
+        void createEntryModel(HashMap<String, String> componentToDmgDescriptions, byte[][] byteArrayArray);
     }
 
     interface IAddNewEntryActivityModel{
-        boolean insertToDB(double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg, byte[][] byteArrayArray);
+        boolean insertDataToDB(IDBHelper dbHelper);
     }
 }

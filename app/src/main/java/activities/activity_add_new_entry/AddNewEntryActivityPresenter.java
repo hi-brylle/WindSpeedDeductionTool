@@ -1,8 +1,15 @@
 package activities.activity_add_new_entry;
 
+import java.util.HashMap;
+
+import activities.activity_add_new_entry.model.EntryModelFactory;
+import helper_classes.db_helper.IDBHelper;
+
 public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAddNewEntryActivityPresenter {
     private IAddNewEntryActivityMVP.IAddNewEntryActivityView mvpView;
     private IAddNewEntryActivityMVP.IAddNewEntryActivityModel mvpModel;
+    private IDBHelper dbHelper;
+
     private IGPSFixListener gpsFixListener;
 
     //"Double" is a non-primitive type and thus can be null
@@ -10,17 +17,10 @@ public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAd
     private Double longitude;
     private Double latitude;
 
-    //qualitative descriptions of damages per structural component
-    private String roofDamageDesc;
-    private String windowsDamageDesc;
-    private String wallsDamageDesc;
-
-    private byte[][] byteArrayArray;
-
     AddNewEntryActivityPresenter(IAddNewEntryActivityMVP.IAddNewEntryActivityView mvpView,
-                                 IAddNewEntryActivityMVP.IAddNewEntryActivityModel mvpModel){
+                                 IDBHelper dbHelper){
         this.mvpView = mvpView;
-        this.mvpModel = mvpModel;
+        this.dbHelper = dbHelper;
     }
 
     @Override
@@ -33,32 +33,22 @@ public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAd
     }
 
     @Override
-    public void setDamageDescriptions(String roofDmg, String windowsDmg, String wallsDmg) {
-        roofDamageDesc = roofDmg;
-        windowsDamageDesc = windowsDmg;
-        wallsDamageDesc = wallsDmg;
+    public boolean passDataToDBHelper(HashMap<String, String> componentToDmgDescriptions, byte[][] byteArrayArray) {
+        createEntryModel(componentToDmgDescriptions, byteArrayArray);
+        return mvpModel.insertDataToDB(dbHelper);
     }
 
     @Override
-    public void setByteArrayArray(byte[][] byteArrayArray) {
-        this.byteArrayArray = byteArrayArray;
-    }
-
-    @Override
-    public boolean passDataToDBHelper() {
-        return mvpModel.insertToDB(longitude, latitude, roofDamageDesc, windowsDamageDesc, wallsDamageDesc, byteArrayArray);
-    }
-
-    @Override
-    public void dumpVariables() {
-        roofDamageDesc = null;
-        windowsDamageDesc = null;
-        wallsDamageDesc = null;
-        byteArrayArray = null;
+    public void createEntryModel(HashMap<String, String> componentToDmgDescriptions, byte[][] byteArrayArray) {
+        EntryModelFactory modelFactory = new EntryModelFactory();
+        setMvpModel(modelFactory.entryModelFactory(longitude, latitude, componentToDmgDescriptions, byteArrayArray));
     }
 
     void addGPSFixListener(IGPSFixListener listener){
         gpsFixListener = listener;
     }
 
+    private void setMvpModel(IAddNewEntryActivityMVP.IAddNewEntryActivityModel mvpModel) {
+        this.mvpModel = mvpModel;
+    }
 }

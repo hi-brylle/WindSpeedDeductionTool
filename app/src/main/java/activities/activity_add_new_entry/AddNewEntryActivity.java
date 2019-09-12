@@ -22,8 +22,9 @@ import com.example.windspeeddeductiontool.R;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
-import helper_classes.DBHelper;
+import helper_classes.db_helper.DBHelper;
 
 public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEntryActivityMVP.IAddNewEntryActivityView {
 
@@ -36,7 +37,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     private RadioGroup radioGroupWallsDamage;
     private Button buttonAddNewEntry;
 
-    private BroadcastReceiver broadcastReceiver;
+    private BroadcastReceiver locationBroadcastReceiver;
 
     private static final int CAMERA_REQUEST = 17;
     ArrayList<Bitmap> photoBitmaps;
@@ -47,6 +48,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         setContentView(R.layout.activity_add_new_entry);
 
         mPresenter = new AddNewEntryActivityPresenter(this, new DBHelper(this));
+
     }
 
     @Override
@@ -61,9 +63,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         buttonAddNewEntry = findViewById(R.id.button_AddNewEntry);
         ImageButton imageButtonAttachPhoto = findViewById(R.id.image_button_AttachPhoto);
 
-        final String[] roofDmg = new String[1];
-        final String[] windowsDmg = new String[1];
-        final String[] wallsDmg = new String[1];
+        final HashMap<String, String> componentToDmgDescriptions = new HashMap<>();
 
         toggleAddNewButtonOnOff();
 
@@ -84,7 +84,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 RadioButton rb = findViewById(i);
                 if(rb != null && rb.isChecked()){
-                    roofDmg[0] = rb.getText().toString();
+                    componentToDmgDescriptions.put("roofDmg", rb.getText().toString());
                 }
             }
         });
@@ -93,7 +93,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 RadioButton rb = findViewById(i);
                 if(rb != null && rb.isChecked()){
-                    windowsDmg[0] = rb.getText().toString();
+                    componentToDmgDescriptions.put("windowsDmg", rb.getText().toString());
                 }
             }
         });
@@ -102,40 +102,29 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 RadioButton rb = findViewById(i);
                 if(rb != null && rb.isChecked()){
-                    wallsDmg[0] = rb.getText().toString();
-                }
+                    componentToDmgDescriptions.put("wallsDmg", rb.getText().toString());                }
             }
         });
 
         buttonAddNewEntry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mPresenter.setDamageDescriptions(roofDmg[0], windowsDmg[0], wallsDmg[0]);
 
-                //there's no need to inject coordinates since
-                //the broadcast receiver continually updates the presenter
-
+                byte[][] byteArrayArray = null;
                 if(photoBitmaps != null && photoBitmaps.size() > 0){
                     Log.d("MY TAG (ADD NEW)", "# bitmaps: " + photoBitmaps.size());
-                    byte[][] byteArrayArray = new byte[photoBitmaps.size()][];
+                    byteArrayArray = new byte[photoBitmaps.size()][];
                     for(int i = 0; i < photoBitmaps.size(); i++){
                         ByteArrayOutputStream stream = new ByteArrayOutputStream();
                         photoBitmaps.get(i).compress(Bitmap.CompressFormat.PNG, 100, stream);
                         byteArrayArray[i] = stream.toByteArray();
                     }
-
-                    mPresenter.setByteArrayArray(byteArrayArray);
                 }
 
-                if(mPresenter.passDataToDBHelper()){
-                    Toast.makeText(AddNewEntryActivity.this, "New Entry Added", Toast.LENGTH_SHORT).show();
-                } else{
-                    Toast.makeText(AddNewEntryActivity.this, "Failed to Add New Entry", Toast.LENGTH_SHORT).show();
-                }
+                showToastOnDBInsert(mPresenter.passDataToDBHelper(componentToDmgDescriptions, byteArrayArray));
 
                 deselectRadioGroups();
                 photoBitmaps = null;
-                mPresenter.dumpVariables();
             }
         });
 
@@ -146,8 +135,9 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                 //TODO: put into image view, i guess
             }
         });
-    }
 
+
+    }
 
     private void takePhoto() {
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
@@ -175,8 +165,8 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     @Override
     protected void onResume() {
         super.onResume();
-        if (broadcastReceiver == null) {
-            broadcastReceiver = new BroadcastReceiver() {
+        if (locationBroadcastReceiver == null) {
+            locationBroadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     double longitude = (double) intent.getExtras().get("longitude");
@@ -188,7 +178,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                 }
             };
         }
-        registerReceiver(broadcastReceiver, new IntentFilter("location_updates"));
+        registerReceiver(locationBroadcastReceiver, new IntentFilter("location_updates"));
 
         toggleAddNewButtonOnOff();
 
@@ -203,8 +193,8 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (broadcastReceiver != null) {
-            unregisterReceiver(broadcastReceiver);
+        if (locationBroadcastReceiver != null) {
+            unregisterReceiver(locationBroadcastReceiver);
         }
     }
 
@@ -221,4 +211,16 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
             buttonAddNewEntry.setEnabled(false);
         }
     }
+
+    @Override
+    public void showToastOnDBInsert(boolean success) {
+        if(success){
+            Toast.makeText(AddNewEntryActivity.this, "New Entry Added", Toast.LENGTH_SHORT).show();
+        } else{
+            Toast.makeText(AddNewEntryActivity.this, "Failed to Add New Entry", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+
 }

@@ -1,4 +1,4 @@
-package helper_classes;
+package helper_classes.db_helper;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,9 +8,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import activities.activity_add_new_entry.IAddNewEntryActivityMVP;
-
-public class DBHelper extends SQLiteOpenHelper implements IAddNewEntryActivityMVP.IAddNewEntryActivityModel {
+public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
     private static final String DATABASE_NAME = "entries.db";
     private static final String TABLE_NAME_INPUTS = "entries";
     private static final String COLUMN_ID = "_id";
@@ -61,26 +59,22 @@ public class DBHelper extends SQLiteOpenHelper implements IAddNewEntryActivityMV
     }
 
     private boolean insert(double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg, byte[][] byteArrayArray){
-        if(byteArrayArray == null){
-            return insert(longitude, latitude, roofDmg, windowsDmg, wallsDmg);
-        } else{
-            SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = this.getWritableDatabase();
 
-            long currentTime = System.currentTimeMillis();
-            ContentValues cv = fillContentValues(currentTime, longitude, latitude, roofDmg, windowsDmg, wallsDmg);
+        long currentTime = System.currentTimeMillis();
+        ContentValues cv = fillContentValues(currentTime, longitude, latitude, roofDmg, windowsDmg, wallsDmg);
 
-            String uniquePhotosTableName = "photos_table_" + currentTime;
-            cv.put(COLUMN_PHOTOS_TABLE_NAME, uniquePhotosTableName);
+        String uniquePhotosTableName = "photos_table_" + currentTime;
+        cv.put(COLUMN_PHOTOS_TABLE_NAME, uniquePhotosTableName);
+        //TODO: trim this function by changing dependency upon current time
+        long result1 = db.insert(TABLE_NAME_INPUTS, null, cv);
 
-            long result1 = db.insert(TABLE_NAME_INPUTS, null, cv);
+        long result2 = insertPhotoBLOB(byteArrayArray , uniquePhotosTableName);
 
-            long result2 = insert(byteArrayArray , uniquePhotosTableName);
-
-            return result1 != -1 && result2 != -1;
-        }
+        return result1 != -1 && result2 != -1;
     }
 
-    private long insert(byte [][] byteArrayArray, String uniquePhotosTableName){
+    private long insertPhotoBLOB(byte [][] byteArrayArray, String uniquePhotosTableName){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
@@ -111,7 +105,7 @@ public class DBHelper extends SQLiteOpenHelper implements IAddNewEntryActivityMV
         return results[0];
     }
 
-    ContentValues fillContentValues(long currentTime, double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg){
+    private ContentValues fillContentValues(long currentTime, double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg){
         ContentValues cv = new ContentValues();
 
         cv.put(COLUMN_LONGITUDE, longitude);
@@ -127,5 +121,10 @@ public class DBHelper extends SQLiteOpenHelper implements IAddNewEntryActivityMV
     @Override
     public boolean insertToDB(double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg, byte[][] byteArrayArray) {
         return insert(longitude, latitude, roofDmg, windowsDmg, wallsDmg, byteArrayArray);
+    }
+
+    @Override
+    public boolean insertToDB(double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg) {
+        return insert(longitude, latitude, roofDmg, windowsDmg, wallsDmg);
     }
 }
