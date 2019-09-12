@@ -3,9 +3,9 @@ package helper_classes.db_helper;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -82,7 +82,6 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
         db.execSQL(SQL_CREATE_PHOTOS_TABLE);
 
         long[] results = new long[byteArrayArray.length];
-        Log.d("MY TAG (DB)", "bAA size: " + byteArrayArray.length);
         for(int i = 0; i < byteArrayArray.length; i++){
             cv.put(column_photos, byteArrayArray[i]);
             results[i] = db.insert(getCurrentPhotosTableName(), null, cv);
@@ -108,23 +107,38 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
         cv.put(COLUMN_ROOF_DAMAGE, roofDmg);
         cv.put(COLUMN_WINDOWS_DAMAGE, windowsDmg);
         cv.put(COLUMN_WALLS_DAMAGE, wallsDmg);
-        cv.put(COLUMN_PHOTOS_TABLE_NAME, "photos_for_id_" + getCurrentRowID());
+
+        if(isEntriesTableEmpty()){
+            //haxxx, shhhhh
+            cv.put(COLUMN_PHOTOS_TABLE_NAME, "photos_for_id_1");
+        }else{
+            cv.put(COLUMN_PHOTOS_TABLE_NAME, "photos_for_id_" + getCurrentRowID());
+        }
+
 
         return cv;
     }
 
+    private boolean isEntriesTableEmpty(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        long count = DatabaseUtils.queryNumEntries(db, TABLE_NAME_INPUTS);
+        return count <= 0;
+    }
+
     private int getCurrentRowID(){
         SQLiteDatabase db = this.getWritableDatabase();
-        String SQL_GET_LAST_ROW_ID = "select ROWID from " + TABLE_NAME_INPUTS + " order by ROWID DESC limit 1";
+        String SQL_GET_LAST_ROW_ID = "select ROWID from " + TABLE_NAME_INPUTS + " order by ROWID DESC limit 2";
         Cursor c = db.rawQuery(SQL_GET_LAST_ROW_ID, null);
-
         long lastID = 0;
-        c.moveToFirst();
-        lastID = c.getLong(0);
+        if(c != null && c.moveToFirst()){
+            lastID = c.getLong(0);
+        }
 
         c.close();
 
-        return (int) lastID++;
+        int currentID = (int) lastID;
+        currentID++;
+        return currentID;
     }
 
     private String getCurrentPhotosTableName(){
@@ -133,6 +147,7 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
         Cursor c = db.rawQuery(SQL_GET_TABLE_NAMES, null);
 
         String columnName;
+        assert c != null;
         c.moveToLast();
         columnName = c.getString(c.getColumnIndex(COLUMN_PHOTOS_TABLE_NAME));
 
