@@ -10,7 +10,6 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -103,7 +102,8 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 RadioButton rb = findViewById(i);
                 if(rb != null && rb.isChecked()){
-                    componentToDmgDescriptions.put("wallsDmg", rb.getText().toString());                }
+                    componentToDmgDescriptions.put("wallsDmg", rb.getText().toString());
+                }
             }
         });
 
