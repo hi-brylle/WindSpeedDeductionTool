@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Wind Speed Deduction Tool</string>
+    <string name="header_longitude">Longitude: </string>
+    <string name="header_latitude">Latitude: </string>
 </resources>

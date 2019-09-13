@@ -243,8 +243,10 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
     @Override
     public void showCurrentLongLat() {
-        textViewLongitude.setText("Longitude: " + mPresenter.getLongitude());
-        textViewLatitude.setText("Latitude: " + mPresenter.getLatitude());
+        String setLongitude = R.string.header_longitude + Double.toString(mPresenter.getLongitude());
+        String setLatitude = R.string.header_latitude + Double.toString(mPresenter.getLatitude());
+        textViewLongitude.setText(setLongitude);
+        textViewLatitude.setText(setLatitude);
     }
 
 
