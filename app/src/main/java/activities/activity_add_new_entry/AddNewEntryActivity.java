@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import activities.activity_gallery.GalleryActivity;
 import helper_classes.db_helper.DBHelper;
 
 public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEntryActivityMVP.IAddNewEntryActivityView {
@@ -165,7 +166,26 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                 photoBitmaps = new ArrayList<>();
             }
             photoBitmaps.add(bmp);
+
+            setImageButtonResource(photoBitmaps.get(photoBitmaps.size() - 1));
         }
+    }
+
+    private void setImageButtonResource(final Bitmap latestBitmap) {
+        ImageButton imageButtonMiniGallery = findViewById(R.id.image_view_MiniGallery);
+        if(imageButtonMiniGallery.getVisibility() == View.GONE){
+            imageButtonMiniGallery.setVisibility(View.VISIBLE);
+        }
+        imageButtonMiniGallery.setImageBitmap(latestBitmap);
+
+        imageButtonMiniGallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent galleryIntent = new Intent(AddNewEntryActivity.this, GalleryActivity.class);
+                galleryIntent.putExtra("bitmap", latestBitmap);
+                startActivity(galleryIntent);
+            }
+        });
     }
 
     byte[][] photoBitmapsToByteArrayArray(ArrayList<Bitmap> photoBitmaps){

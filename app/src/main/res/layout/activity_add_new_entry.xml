@@ -23,13 +23,14 @@
         android:layout_margin="10dp"
         android:src="@drawable/photo_camera" />
 
-    <ImageView
+    <ImageButton
         android:id="@+id/image_view_MiniGallery"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/linear_layout_DamagesRadioGroups"
         android:layout_margin="10dp"
-        android:layout_toRightOf="@id/image_button_AttachPhoto" />
+        android:layout_toRightOf="@id/image_button_AttachPhoto"
+        android:visibility="gone" />
 
     <include
         android:id="@+id/linear_layout_DamagesRadioGroups"
