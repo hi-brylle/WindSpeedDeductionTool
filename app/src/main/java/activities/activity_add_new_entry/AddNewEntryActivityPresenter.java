@@ -51,4 +51,12 @@ public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAd
     private void setMvpModel(IAddNewEntryActivityMVP.IAddNewEntryActivityModel mvpModel) {
         this.mvpModel = mvpModel;
     }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
 }

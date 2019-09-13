@@ -7,6 +7,7 @@ import helper_classes.db_helper.IDBHelper;
 public interface IAddNewEntryActivityMVP {
     interface IAddNewEntryActivityView{
         void showToastOnDBInsert(boolean success);
+        void showCurrentLongLat();
     }
 
     interface IAddNewEntryActivityPresenter{

@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -66,7 +67,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         final HashMap<String, String> componentToDmgDescriptions = new HashMap<>();
 
         toggleAddNewButtonOnOff();
-
+        //TODO: make the gps fix listener listen only on the first fix
         mPresenter.addGPSFixListener(new IGPSFixListener() {
             @Override
             public void onGPSFix() {
@@ -109,6 +110,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         buttonAddNewEntry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                deselectRadioGroups();
 
                 byte[][] byteArrayArray = null;
                 if(photoBitmaps != null && photoBitmaps.size() > 0){
@@ -121,9 +123,10 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                     }
                 }
 
-                showToastOnDBInsert(mPresenter.passDataToDBHelper(componentToDmgDescriptions, byteArrayArray));
+                //TODO: run this on a separate thread
+                boolean insertSuccess = mPresenter.passDataToDBHelper(componentToDmgDescriptions, byteArrayArray);
+                showToastOnDBInsert(insertSuccess);
 
-                deselectRadioGroups();
                 photoBitmaps = null;
             }
         });
@@ -139,6 +142,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
     }
 
+    //TODO: put these photo-taking shit in another class
     private void takePhoto() {
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(cameraIntent, CAMERA_REQUEST);
@@ -169,19 +173,15 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
             locationBroadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    double longitude = (double) intent.getExtras().get("longitude");
-                    double latitude = (double) intent.getExtras().get("latitude");
-                    textViewLongitude.setText("Longitude: " + longitude);
-                    textViewLatitude.setText("Latitude: " + latitude);
-
-                    mPresenter.updateCurrentLongLat(longitude, latitude);
+                    mPresenter.updateCurrentLongLat((double) intent.getExtras().get("longitude"),
+                                                    (double) intent.getExtras().get("latitude"));
+                    showCurrentLongLat();
                 }
             };
         }
         registerReceiver(locationBroadcastReceiver, new IntentFilter("location_updates"));
 
         toggleAddNewButtonOnOff();
-
         mPresenter.addGPSFixListener(new IGPSFixListener() {
             @Override
             public void onGPSFix() {
@@ -219,6 +219,12 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         } else{
             Toast.makeText(AddNewEntryActivity.this, "Failed to Add New Entry", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void showCurrentLongLat() {
+        textViewLongitude.setText("Longitude: " + mPresenter.getLongitude());
+        textViewLatitude.setText("Latitude: " + mPresenter.getLatitude());
     }
 
 
