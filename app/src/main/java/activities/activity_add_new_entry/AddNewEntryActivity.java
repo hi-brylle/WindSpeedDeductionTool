@@ -111,6 +111,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
             @Override
             public void onClick(View view) {
                 deselectRadioGroups();
+                toggleAddNewButtonOnOff();
 
                 byte[][] byteArrayArray = null;
                 if(photoBitmaps != null && photoBitmaps.size() > 0){
@@ -123,9 +124,22 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                     }
                 }
 
-                //TODO: run this on a separate thread
-                boolean insertSuccess = mPresenter.passDataToDBHelper(componentToDmgDescriptions, byteArrayArray);
-                showToastOnDBInsert(insertSuccess);
+                final byte[][] finalByteArrayArray = byteArrayArray;
+                class DBInsertTask extends AsyncTask<Void, Void, Boolean> {
+
+                    @Override
+                    protected Boolean doInBackground(Void... voids) {
+                        return mPresenter.passDataToDBHelper(componentToDmgDescriptions, finalByteArrayArray);
+                    }
+
+                    @Override
+                    protected void onPostExecute(Boolean insertSuccess) {
+                        showToastOnDBInsert(insertSuccess);
+                    }
+                }
+
+                DBInsertTask dbInsertTask = new DBInsertTask();
+                dbInsertTask.execute();
 
                 photoBitmaps = null;
             }
