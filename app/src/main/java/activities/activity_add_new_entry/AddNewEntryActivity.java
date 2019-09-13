@@ -115,13 +115,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
                 byte[][] byteArrayArray = null;
                 if(photoBitmaps != null && photoBitmaps.size() > 0){
-                    Log.d("MY TAG (ADD NEW)", "# bitmaps: " + photoBitmaps.size());
-                    byteArrayArray = new byte[photoBitmaps.size()][];
-                    for(int i = 0; i < photoBitmaps.size(); i++){
-                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                        photoBitmaps.get(i).compress(Bitmap.CompressFormat.PNG, 100, stream);
-                        byteArrayArray[i] = stream.toByteArray();
-                    }
+                    byteArrayArray = photoBitmapsToByteArrayArray(photoBitmaps);
                 }
 
                 final byte[][] finalByteArrayArray = byteArrayArray;
@@ -172,6 +166,18 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
             }
             photoBitmaps.add(bmp);
         }
+    }
+
+    byte[][] photoBitmapsToByteArrayArray(ArrayList<Bitmap> photoBitmaps){
+        byte[][] byteArrayArray = null;
+        byteArrayArray = new byte[photoBitmaps.size()][];
+        for(int i = 0; i < photoBitmaps.size(); i++){
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            photoBitmaps.get(i).compress(Bitmap.CompressFormat.PNG, 100, stream);
+            byteArrayArray[i] = stream.toByteArray();
+        }
+
+        return byteArrayArray;
     }
 
     private void deselectRadioGroups() {
