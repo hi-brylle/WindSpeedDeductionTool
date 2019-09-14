@@ -30,7 +30,9 @@ public class MainActivity extends AppCompatActivity implements IMainActivityMVP.
 
     private static final String[] REQUIRED_PERMISSIONS = new String[] {
         Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.CAMERA
+        Manifest.permission.CAMERA,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.READ_EXTERNAL_STORAGE
         //add more permissions here when needed
     };
     private static final int ALL_PERMISSIONS_REQUEST_CODE = 17;

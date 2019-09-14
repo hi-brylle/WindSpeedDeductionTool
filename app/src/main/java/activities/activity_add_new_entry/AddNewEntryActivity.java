@@ -10,6 +10,8 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -21,6 +23,7 @@ import android.widget.Toast;
 import com.example.windspeeddeductiontool.R;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -49,6 +52,22 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         setContentView(R.layout.activity_add_new_entry);
 
         mPresenter = new AddNewEntryActivityPresenter(this, new DBHelper(this));
+
+        if(isExternalStorageRootWritable()){
+            checkExternalDirState();
+            if(canIWriteShitInTheExternalPublicPictureDirectoryHuh()){
+                Log.d("MY TAG", "HOLY SHIT FOR REAL");
+            } else{
+                Log.d("MY TAG", "AWW, NOPE");
+            }
+
+            if(isMyAppDirRootInThere()){
+                Log.d("MY TAG", "OH YEAH IT'S ALL COMING TOGETHER");
+            } else{
+                Log.d("MY TAG", "AWW, NOT THERE");
+            }
+        }
+
 
     }
 
@@ -116,7 +135,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
                 byte[][] byteArrayArray = null;
                 if(photoBitmaps != null && photoBitmaps.size() > 0){
-                    byteArrayArray = photoBitmapsToByteArrayArray(photoBitmaps);
+                    byteArrayArray = convertBitmapsToByteArrayArray(photoBitmaps);
                 }
 
                 final byte[][] finalByteArrayArray = byteArrayArray;
@@ -137,6 +156,10 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                 dbInsertTask.execute();
 
                 photoBitmaps = null;
+
+                //just checking shit
+                //TODO: eradicate what lies below
+                /*checkExternalDirState();*/
             }
         });
 
@@ -149,6 +172,25 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         });
 
 
+    }
+
+    private void checkExternalDirState() {
+        Log.d("MY TAG", "External Storage Dir Root: " + Environment.getExternalStorageDirectory().toString());
+        Log.d("MY TAG", "External Storage Dir Root: " + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES));
+    }
+
+    boolean isExternalStorageRootWritable(){
+        return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
+    }
+
+    boolean canIWriteShitInTheExternalPublicPictureDirectoryHuh(){
+        File myAppRootDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), String.valueOf(R.string.appRootDir));
+        return myAppRootDir.mkdir();
+    }
+
+    boolean isMyAppDirRootInThere(){
+        File myAppRootDirProbably = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), String.valueOf(R.string.appRootDir));
+        return myAppRootDirProbably.exists();
     }
 
     //TODO: put these photo-taking shit in another class
@@ -188,7 +230,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         });
     }
 
-    byte[][] photoBitmapsToByteArrayArray(ArrayList<Bitmap> photoBitmaps){
+    byte[][] convertBitmapsToByteArrayArray(ArrayList<Bitmap> photoBitmaps){
         byte[][] byteArrayArray = null;
         byteArrayArray = new byte[photoBitmaps.size()][];
         for(int i = 0; i < photoBitmaps.size(); i++){
