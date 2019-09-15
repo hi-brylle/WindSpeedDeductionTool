@@ -67,7 +67,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         radioGroupWindowsDamage = findViewById(R.id.radio_group_WindowsDamage);
         radioGroupWallsDamage = findViewById(R.id.radio_group_WallsDamage);
         buttonAddNewEntry = findViewById(R.id.button_AddNewEntry);
-        ImageButton imageButtonAttachPhoto = findViewById(R.id.image_button_AttachPhoto);
+        final ImageButton imageButtonAttachPhoto = findViewById(R.id.image_button_AttachPhoto);
 
         final HashMap<String, String> componentToDmgDescriptions = new HashMap<>();
 
@@ -151,13 +151,14 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                 }
 
                 photoBitmaps = null;
+
             }
         });
 
         imageButtonAttachPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                takePhoto();
+                takeSinglePhoto();
                 //TODO: put into image view, i guess
             }
         });
@@ -226,28 +227,10 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
     }
 
-    //TODO: put these photo-taking shit in another class
-    private void takePhoto() {
-        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(cameraIntent, CAMERA_REQUEST);
-    }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (resultCode == RESULT_OK && requestCode == CAMERA_REQUEST) {
-            assert data != null;
-            Bitmap bmp = (Bitmap) data.getExtras().get("data");
-            if (photoBitmaps == null) {
-                photoBitmaps = new ArrayList<>();
-            }
-            photoBitmaps.add(bmp);
 
-            setImageButtonResource(photoBitmaps.get(photoBitmaps.size() - 1));
-        }
-    }
-
-    private void setImageButtonResource(final Bitmap latestBitmap) {
-        ImageButton imageButtonMiniGallery = findViewById(R.id.image_view_MiniGallery);
+    private void setMiniGalleryButtonResource(final Bitmap latestBitmap) {
+        final ImageButton imageButtonMiniGallery = findViewById(R.id.image_button_MiniGallery);
         if (imageButtonMiniGallery.getVisibility() == View.GONE) {
             imageButtonMiniGallery.setVisibility(View.VISIBLE);
         }
@@ -342,6 +325,26 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         String setLatitude = getString(R.string.header_latitude) + mPresenter.getLatitude();
         textViewLongitude.setText(setLongitude);
         textViewLatitude.setText(setLatitude);
+    }
+
+    @Override
+    public void takeSinglePhoto() {
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(cameraIntent, CAMERA_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (resultCode == RESULT_OK && requestCode == CAMERA_REQUEST) {
+            assert data != null;
+            Bitmap bmp = (Bitmap) data.getExtras().get("data");
+            if (photoBitmaps == null) {
+                photoBitmaps = new ArrayList<>();
+            }
+
+            photoBitmaps.add(bmp);
+            setMiniGalleryButtonResource(photoBitmaps.get(photoBitmaps.size() - 1));
+        }
     }
 
 

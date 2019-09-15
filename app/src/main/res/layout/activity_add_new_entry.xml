@@ -24,7 +24,7 @@
         android:src="@drawable/photo_camera" />
 
     <ImageButton
-        android:id="@+id/image_view_MiniGallery"
+        android:id="@+id/image_button_MiniGallery"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/linear_layout_DamagesRadioGroups"
