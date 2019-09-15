@@ -32,17 +32,15 @@ public class PhotoManager {
         iPhotoManagerBitmapListener.onNonNullPhotoBitmap();
     }
 
-    public Bitmap getBitmap(int index){
-        return photoBitmaps.get(index);
-    }
-
     public ArrayList<Bitmap> getBitmaps(){
         return photoBitmaps;
     }
 
     public void dumpBitmaps(){
-        photoBitmaps.clear();
-        photoBitmaps = null;
+        if(photoBitmaps != null){
+            photoBitmaps.clear();
+            photoBitmaps = null;
+        }
     }
 
     public void addNonNullPhotoBitmapListener(IPhotoManagerBitmapListener listener){

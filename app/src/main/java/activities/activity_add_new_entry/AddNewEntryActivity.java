@@ -29,11 +29,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import activities.activity_gallery.GalleryActivity;
+import helper_classes.DBInsertTask;
 import helper_classes.db_helper.DBHelper;
 import helper_classes.photo_manager.IPhotoManagerBitmapListener;
 import helper_classes.photo_manager.PhotoManager;
 
-public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEntryActivityMVP.IAddNewEntryActivityView {
+public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEntryActivityMVP.IAddNewEntryActivityView, View.OnClickListener {
 
     private AddNewEntryActivityPresenter mPresenter;
 
@@ -47,7 +48,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     private BroadcastReceiver locationBroadcastReceiver;
 
     PhotoManager photoManager;
-
+    final HashMap<String, String> componentToDmgDescriptions = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,12 +76,9 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         photoManager.addNonNullPhotoBitmapListener(new IPhotoManagerBitmapListener() {
             @Override
             public void onNonNullPhotoBitmap() {
-                //TODO: set image view here
                 setMiniGalleryButtonResource(photoManager.getBitmaps().get(photoManager.getBitmaps().size() - 1));
             }
         });
-
-        final HashMap<String, String> componentToDmgDescriptions = new HashMap<>();
 
         toggleAddNewButtonOnOff();
         //TODO: make the gps fix listener listen only on the first fix
@@ -94,8 +92,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         //there is a stupid bug in the framework in which when calling clearCheck(),
         //setOnCheckedChangeListener is called twice, but by the second time it is called,
         //rb loses reference to the checked button because its selection was just cleared,
-        //and so, a null check is done first
-        //smh Google, you're a shame
+        //and so, a null check is done first; smh Google, you're a shame
         radioGroupRoofDamage.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
@@ -124,51 +121,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
             }
         });
 
-        buttonAddNewEntry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                deselectRadioGroups();
-                toggleAddNewButtonOnOff();
-
-                ArrayList<Bitmap> photoBitmaps = photoManager.getBitmaps();
-
-                byte[][] byteArrayArray = null;
-                if (photoBitmaps != null && photoBitmaps.size() > 0) {
-                    byteArrayArray = convertBitmapsToByteArrayArray(photoBitmaps);
-                }
-
-                final byte[][] finalByteArrayArray = byteArrayArray;
-                class DBInsertTask extends AsyncTask<Void, Void, Boolean> {
-
-                    @Override
-                    protected Boolean doInBackground(Void... voids) {
-                        return mPresenter.passDataToDBHelper(componentToDmgDescriptions, finalByteArrayArray);
-                    }
-
-                    @Override
-                    protected void onPostExecute(Boolean insertSuccess) {
-                        showToastOnDBInsert(insertSuccess);
-                    }
-                }
-
-                DBInsertTask dbInsertTask = new DBInsertTask();
-                dbInsertTask.execute();
-
-                //kinda dangerous, but im hoping what i read somewhere, sometime, about
-                //how SQLite operations are actually single-threaded, internally, is true
-                String potentialFilename = getString(R.string.photoReferencePrefix) + mPresenter.getLatestRowID();
-                Log.d("MY TAG", "Potential Filename: " + potentialFilename);
-
-                if (isMyAppDirRootInThere()) {
-                    savePhotos(photoBitmaps, potentialFilename);
-                }
-
-                /*photoBitmaps = null;
-                final ImageButton imageButtonMiniGallery = findViewById(R.id.image_button_MiniGallery);
-                imageButtonMiniGallery.setVisibility(View.GONE);
-                imageButtonMiniGallery.setImageBitmap(null);*/
-            }
-        });
+        buttonAddNewEntry.setOnClickListener(this);
 
         imageButtonAttachPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -276,38 +229,6 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         radioGroupWallsDamage.clearCheck();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (locationBroadcastReceiver == null) {
-            locationBroadcastReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    mPresenter.updateCurrentLongLat((double) intent.getExtras().get("longitude"),
-                            (double) intent.getExtras().get("latitude"));
-                    showCurrentLongLat();
-                }
-            };
-        }
-        registerReceiver(locationBroadcastReceiver, new IntentFilter("location_updates"));
-
-        toggleAddNewButtonOnOff();
-        mPresenter.addGPSFixListener(new IGPSFixListener() {
-            @Override
-            public void onGPSFix() {
-                toggleAddNewButtonOnOff();
-            }
-        });
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (locationBroadcastReceiver != null) {
-            unregisterReceiver(locationBroadcastReceiver);
-        }
-    }
-
     public boolean areAllRadioGroupsChecked() {
         return radioGroupRoofDamage.getCheckedRadioButtonId() != -1 &&
                 radioGroupWindowsDamage.getCheckedRadioButtonId() != -1 &&
@@ -354,5 +275,75 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         }
     }
 
+
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.button_AddNewEntry) {
+            addNewEntry();
+        }
+    }
+
+    private void addNewEntry(){
+        deselectRadioGroups();
+        toggleAddNewButtonOnOff();
+
+        ArrayList<Bitmap> photoBitmaps = photoManager.getBitmaps();
+
+        byte[][] byteArrayArray = null;
+        if (photoBitmaps != null && photoBitmaps.size() > 0) {
+            byteArrayArray = convertBitmapsToByteArrayArray(photoBitmaps);
+        }
+        final byte[][] finalByteArrayArray = byteArrayArray;
+        DBInsertTask dbInsertTask = new DBInsertTask(this, mPresenter);
+        dbInsertTask.execute(componentToDmgDescriptions, finalByteArrayArray);
+
+        //kinda dangerous, but im hoping what i read somewhere, sometime, about
+        //how SQLite operations are actually single-threaded, internally, is true
+        String folderName = getString(R.string.photoReferencePrefix) + mPresenter.getLatestRowID();
+
+        if(photoBitmaps != null){
+            if (isMyAppDirRootInThere()) {
+                savePhotos(photoBitmaps, folderName);
+            }
+        }
+
+        photoManager.dumpBitmaps();
+
+        final ImageButton imageButtonMiniGallery = findViewById(R.id.image_button_MiniGallery);
+        imageButtonMiniGallery.setVisibility(View.GONE);
+        imageButtonMiniGallery.setImageBitmap(null);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (locationBroadcastReceiver == null) {
+            locationBroadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    mPresenter.updateCurrentLongLat((double) intent.getExtras().get("longitude"),
+                            (double) intent.getExtras().get("latitude"));
+                    showCurrentLongLat();
+                }
+            };
+        }
+        registerReceiver(locationBroadcastReceiver, new IntentFilter("location_updates"));
+
+        toggleAddNewButtonOnOff();
+        mPresenter.addGPSFixListener(new IGPSFixListener() {
+            @Override
+            public void onGPSFix() {
+                toggleAddNewButtonOnOff();
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (locationBroadcastReceiver != null) {
+            unregisterReceiver(locationBroadcastReceiver);
+        }
+    }
 
 }
