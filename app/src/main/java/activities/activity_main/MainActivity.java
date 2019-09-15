@@ -79,8 +79,8 @@ public class MainActivity extends AppCompatActivity implements IMainActivityMVP.
                 public void onReceive(Context context, Intent intent) {
                     double longitude = (double) intent.getExtras().get("longitude");
                     double latitude = (double) intent.getExtras().get("latitude");
-                    String setLongitude = R.string.header_longitude + Double.toString(longitude);
-                    String setLatitude = R.string.header_latitude + Double.toString(latitude);
+                    String setLongitude = Integer.toString(R.string.header_longitude) + longitude;
+                    String setLatitude = Integer.toString(R.string.header_latitude) + latitude;
                     textViewLongitude.setText(setLongitude);
                     textViewLatitude.setText(setLatitude);
                 }

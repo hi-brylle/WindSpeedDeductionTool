@@ -53,7 +53,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
         mPresenter = new AddNewEntryActivityPresenter(this, new DBHelper(this));
 
-        if(isExternalStorageRootWritable()){
+        /*if(isExternalStorageRootWritable()){
             checkExternalDirState();
             if(canIWriteShitInTheExternalPublicPictureDirectoryHuh()){
                 Log.d("MY TAG", "HOLY SHIT FOR REAL");
@@ -66,7 +66,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
             } else{
                 Log.d("MY TAG", "AWW, NOT THERE");
             }
-        }
+        }*/
 
 
     }
@@ -155,6 +155,9 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                 DBInsertTask dbInsertTask = new DBInsertTask();
                 dbInsertTask.execute();
 
+                String potentialFilename = R.string.photoReferencePrefix + String.valueOf(mPresenter.getLatestRowID());
+                Log.d("MY TAG", "Potential Filename: " + potentialFilename);
+
                 photoBitmaps = null;
 
                 //just checking shit
@@ -191,6 +194,12 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     boolean isMyAppDirRootInThere(){
         File myAppRootDirProbably = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), String.valueOf(R.string.appRootDir));
         return myAppRootDirProbably.exists();
+    }
+
+    void savePhotos(ArrayList<Bitmap> photoBitmaps, String folderName){
+        File myAppRootDirProbably = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                                        String.valueOf(R.string.appRootDir));
+
     }
 
     //TODO: put these photo-taking shit in another class
@@ -305,8 +314,8 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
     @Override
     public void showCurrentLongLat() {
-        String setLongitude = R.string.header_longitude + Double.toString(mPresenter.getLongitude());
-        String setLatitude = R.string.header_latitude + Double.toString(mPresenter.getLatitude());
+        String setLongitude = Integer.toString(R.string.header_longitude) + mPresenter.getLongitude();
+        String setLatitude = Integer.toString(R.string.header_latitude) + mPresenter.getLatitude();
         textViewLongitude.setText(setLongitude);
         textViewLatitude.setText(setLatitude);
     }

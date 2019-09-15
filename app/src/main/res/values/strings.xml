@@ -3,4 +3,5 @@
     <string name="header_longitude">Longitude: </string>
     <string name="header_latitude">Latitude: </string>
     <string name="appRootDir">windSpeedDeductionTool</string>
+    <string name="photoReferencePrefix">photos_for_id_</string>
 </resources>

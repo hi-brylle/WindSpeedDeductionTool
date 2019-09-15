@@ -109,12 +109,10 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
         cv.put(COLUMN_WALLS_DAMAGE, wallsDmg);
 
         if(isEntriesTableEmpty()){
-            //haxxx, shhhhh
             cv.put(COLUMN_PHOTOS_TABLE_NAME, "photos_for_id_1");
-        }else{
+        } else{
             cv.put(COLUMN_PHOTOS_TABLE_NAME, "photos_for_id_" + getCurrentRowID());
         }
-
 
         return cv;
     }
@@ -126,19 +124,24 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
     }
 
     private int getCurrentRowID(){
-        SQLiteDatabase db = this.getWritableDatabase();
-        String SQL_GET_LAST_ROW_ID = "select ROWID from " + TABLE_NAME_INPUTS + " order by ROWID DESC limit 2";
-        Cursor c = db.rawQuery(SQL_GET_LAST_ROW_ID, null);
-        long lastID = 0;
-        if(c != null && c.moveToFirst()){
-            lastID = c.getLong(0);
+        if(isEntriesTableEmpty()){
+            //haxxx, shhhhh
+            return 1;
+        } else {
+            SQLiteDatabase db = this.getWritableDatabase();
+            String SQL_GET_LAST_ROW_ID = "select ROWID from " + TABLE_NAME_INPUTS + " order by ROWID DESC limit 2";
+            Cursor c = db.rawQuery(SQL_GET_LAST_ROW_ID, null);
+            long lastID = 0;
+            if(c != null && c.moveToFirst()){
+                lastID = c.getLong(0);
+            }
+
+            c.close();
+
+            int currentID = (int) lastID;
+            currentID++;
+            return currentID;
         }
-
-        c.close();
-
-        int currentID = (int) lastID;
-        currentID++;
-        return currentID;
     }
 
     private String getCurrentPhotosTableName(){
@@ -164,5 +167,10 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
     @Override
     public boolean insertToDB(double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg) {
         return insert(longitude, latitude, roofDmg, windowsDmg, wallsDmg);
+    }
+
+    @Override
+    public int getLatestRowID() {
+        return getCurrentRowID();
     }
 }

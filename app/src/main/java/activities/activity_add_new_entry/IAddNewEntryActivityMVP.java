@@ -14,6 +14,7 @@ public interface IAddNewEntryActivityMVP {
         void updateCurrentLongLat(double longitude, double latitude);
         boolean passDataToDBHelper(HashMap<String, String> componentToDmgDescriptions, byte[][] byteArrayArray);
         void createEntryModel(HashMap<String, String> componentToDmgDescriptions, byte[][] byteArrayArray);
+        int getLatestRowID();
     }
 
     interface IAddNewEntryActivityModel{

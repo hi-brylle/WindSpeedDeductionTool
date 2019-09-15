@@ -44,6 +44,11 @@ public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAd
         setMvpModel(modelFactory.getEntryModel(longitude, latitude, componentToDmgDescriptions, byteArrayArray));
     }
 
+    @Override
+    public int getLatestRowID() {
+        return dbHelper.getLatestRowID();
+    }
+
     void addGPSFixListener(IGPSFixListener listener){
         gpsFixListener = listener;
     }
