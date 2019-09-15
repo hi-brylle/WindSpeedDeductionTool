@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import activities.activity_add_new_entry.IAddNewEntryActivityMVP;
 
 public class PhotoManager {
-    private static final int CAMERA_REQUEST = 17;
+    public static final int CAMERA_REQUEST = 17;
     private ArrayList<Bitmap> photoBitmaps;
     private IAddNewEntryActivityMVP.IAddNewEntryActivityView mvpView;
 
@@ -15,30 +15,37 @@ public class PhotoManager {
 
     public PhotoManager(IAddNewEntryActivityMVP.IAddNewEntryActivityView mvpView){
         this.mvpView = mvpView;
+        photoBitmaps = null;
     }
 
-    void takeSinglePhoto(){
-        mvpView.takeSinglePhoto();
+    public void takeSinglePhoto(){
+        mvpView.takeSinglePhoto(CAMERA_REQUEST);
     }
 
-    void addBitmap(Bitmap bitmap){
+    public void addBitmap(Bitmap bitmap){
         if (photoBitmaps == null) {
             photoBitmaps = new ArrayList<>();
         }
 
         photoBitmaps.add(bitmap);
+
+        iPhotoManagerBitmapListener.onNonNullPhotoBitmap();
     }
 
-    Bitmap getBitmap(int index){
+    public Bitmap getBitmap(int index){
         return photoBitmaps.get(index);
     }
 
-    void dumpBitmaps(){
+    public ArrayList<Bitmap> getBitmaps(){
+        return photoBitmaps;
+    }
+
+    public void dumpBitmaps(){
         photoBitmaps.clear();
         photoBitmaps = null;
     }
 
-    void addNonNullPhotoBitmapListener(IPhotoManagerBitmapListener listener){
+    public void addNonNullPhotoBitmapListener(IPhotoManagerBitmapListener listener){
         iPhotoManagerBitmapListener = listener;
     }
 

@@ -30,6 +30,8 @@ import java.util.HashMap;
 
 import activities.activity_gallery.GalleryActivity;
 import helper_classes.db_helper.DBHelper;
+import helper_classes.photo_manager.IPhotoManagerBitmapListener;
+import helper_classes.photo_manager.PhotoManager;
 
 public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEntryActivityMVP.IAddNewEntryActivityView {
 
@@ -44,8 +46,8 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
     private BroadcastReceiver locationBroadcastReceiver;
 
-    private static final int CAMERA_REQUEST = 17;
-    ArrayList<Bitmap> photoBitmaps;
+    PhotoManager photoManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +55,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         setContentView(R.layout.activity_add_new_entry);
 
         mPresenter = new AddNewEntryActivityPresenter(this, new DBHelper(this));
+        photoManager = new PhotoManager(this);
 
         appRootDirInit();
     }
@@ -68,6 +71,14 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         radioGroupWallsDamage = findViewById(R.id.radio_group_WallsDamage);
         buttonAddNewEntry = findViewById(R.id.button_AddNewEntry);
         final ImageButton imageButtonAttachPhoto = findViewById(R.id.image_button_AttachPhoto);
+
+        photoManager.addNonNullPhotoBitmapListener(new IPhotoManagerBitmapListener() {
+            @Override
+            public void onNonNullPhotoBitmap() {
+                //TODO: set image view here
+                setMiniGalleryButtonResource(photoManager.getBitmaps().get(photoManager.getBitmaps().size() - 1));
+            }
+        });
 
         final HashMap<String, String> componentToDmgDescriptions = new HashMap<>();
 
@@ -119,6 +130,8 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                 deselectRadioGroups();
                 toggleAddNewButtonOnOff();
 
+                ArrayList<Bitmap> photoBitmaps = photoManager.getBitmaps();
+
                 byte[][] byteArrayArray = null;
                 if (photoBitmaps != null && photoBitmaps.size() > 0) {
                     byteArrayArray = convertBitmapsToByteArrayArray(photoBitmaps);
@@ -150,18 +163,17 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                     savePhotos(photoBitmaps, potentialFilename);
                 }
 
-                photoBitmaps = null;
+                /*photoBitmaps = null;
                 final ImageButton imageButtonMiniGallery = findViewById(R.id.image_button_MiniGallery);
                 imageButtonMiniGallery.setVisibility(View.GONE);
-                imageButtonMiniGallery.setImageBitmap(null);
+                imageButtonMiniGallery.setImageBitmap(null);*/
             }
         });
 
         imageButtonAttachPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                takeSinglePhoto();
-                //TODO: put into image view, i guess
+                photoManager.takeSinglePhoto();
             }
         });
 
@@ -228,8 +240,6 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         }
 
     }
-
-
 
     private void setMiniGalleryButtonResource(final Bitmap latestBitmap) {
         final ImageButton imageButtonMiniGallery = findViewById(R.id.image_button_MiniGallery);
@@ -330,22 +340,17 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     }
 
     @Override
-    public void takeSinglePhoto() {
+    public void takeSinglePhoto(int CAMERA_REQUEST) {
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(cameraIntent, CAMERA_REQUEST);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (resultCode == RESULT_OK && requestCode == CAMERA_REQUEST) {
+        if (resultCode == RESULT_OK && requestCode == photoManager.CAMERA_REQUEST) {
             assert data != null;
             Bitmap bmp = (Bitmap) data.getExtras().get("data");
-            if (photoBitmaps == null) {
-                photoBitmaps = new ArrayList<>();
-            }
-
-            photoBitmaps.add(bmp);
-            setMiniGalleryButtonResource(photoBitmaps.get(photoBitmaps.size() - 1));
+            photoManager.addBitmap(bmp);
         }
     }
 

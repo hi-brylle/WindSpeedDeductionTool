@@ -8,7 +8,7 @@ public interface IAddNewEntryActivityMVP {
     interface IAddNewEntryActivityView{
         void showToastOnDBInsert(boolean success);
         void showCurrentLongLat();
-        void takeSinglePhoto();
+        void takeSinglePhoto(int cameraRequest);
     }
 
     interface IAddNewEntryActivityPresenter{
