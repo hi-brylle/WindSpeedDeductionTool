@@ -151,7 +151,9 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                 }
 
                 photoBitmaps = null;
-
+                final ImageButton imageButtonMiniGallery = findViewById(R.id.image_button_MiniGallery);
+                imageButtonMiniGallery.setVisibility(View.GONE);
+                imageButtonMiniGallery.setImageBitmap(null);
             }
         });
 
