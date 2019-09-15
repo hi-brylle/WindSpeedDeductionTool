@@ -24,6 +24,7 @@ import com.example.windspeeddeductiontool.R;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -155,14 +156,16 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                 DBInsertTask dbInsertTask = new DBInsertTask();
                 dbInsertTask.execute();
 
-                String potentialFilename = R.string.photoReferencePrefix + String.valueOf(mPresenter.getLatestRowID());
+                //kinda dangerous, but im hoping what i read somewhere, sometime, about
+                //how SQLite operations are actually single-threaded, internally, is true
+                String potentialFilename = getString(R.string.photoReferencePrefix) + mPresenter.getLatestRowID();
                 Log.d("MY TAG", "Potential Filename: " + potentialFilename);
 
-                photoBitmaps = null;
+                if(isMyAppDirRootInThere()){
+                    savePhotos(photoBitmaps, potentialFilename);
+                }
 
-                //just checking shit
-                //TODO: eradicate what lies below
-                /*checkExternalDirState();*/
+                photoBitmaps = null;
             }
         });
 
@@ -187,18 +190,50 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     }
 
     boolean canIWriteShitInTheExternalPublicPictureDirectoryHuh(){
-        File myAppRootDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), String.valueOf(R.string.appRootDir));
+        File myAppRootDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), getString(R.string.appRootDir));
         return myAppRootDir.mkdir();
     }
 
     boolean isMyAppDirRootInThere(){
-        File myAppRootDirProbably = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), String.valueOf(R.string.appRootDir));
+        File myAppRootDirProbably = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), getString(R.string.appRootDir));
         return myAppRootDirProbably.exists();
     }
 
     void savePhotos(ArrayList<Bitmap> photoBitmaps, String folderName){
-        File myAppRootDirProbably = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+        File myAppRootDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
                                         String.valueOf(R.string.appRootDir));
+
+        File currentPhotoSetDir = new File(myAppRootDir, folderName);
+        if(currentPhotoSetDir.exists()){
+            currentPhotoSetDir.delete();
+        }
+
+        boolean folderCreated = currentPhotoSetDir.mkdir();
+        if(folderCreated){
+            Log.d("MY TAG", "folder " + folderName + " created");
+        } else{
+            Toast.makeText(this, "Failed to save photos in local storage", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        for(int i = 0; i < photoBitmaps.size(); i++){
+            String filename = folderName + "_#" + (i + 1) + ".jpg";
+            File photoFile = new File(currentPhotoSetDir, filename);
+            if (photoFile.exists()) {
+                photoFile.delete();
+            }
+
+            try {
+                FileOutputStream out = new FileOutputStream(photoFile);
+                photoBitmaps.get(i).compress(Bitmap.CompressFormat.JPEG, 100, out);
+                out.flush();
+                out.close();
+
+                Log.d("MY TAG", "Saved " + filename);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
     }
 
@@ -314,8 +349,8 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
     @Override
     public void showCurrentLongLat() {
-        String setLongitude = Integer.toString(R.string.header_longitude) + mPresenter.getLongitude();
-        String setLatitude = Integer.toString(R.string.header_latitude) + mPresenter.getLatitude();
+        String setLongitude = getString(R.string.header_longitude) + mPresenter.getLongitude();
+        String setLatitude = getString(R.string.header_latitude) + mPresenter.getLatitude();
         textViewLongitude.setText(setLongitude);
         textViewLatitude.setText(setLatitude);
     }
