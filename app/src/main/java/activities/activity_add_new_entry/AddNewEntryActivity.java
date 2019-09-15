@@ -54,22 +54,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
         mPresenter = new AddNewEntryActivityPresenter(this, new DBHelper(this));
 
-        /*if(isExternalStorageRootWritable()){
-            checkExternalDirState();
-            if(canIWriteShitInTheExternalPublicPictureDirectoryHuh()){
-                Log.d("MY TAG", "HOLY SHIT FOR REAL");
-            } else{
-                Log.d("MY TAG", "AWW, NOPE");
-            }
-
-            if(isMyAppDirRootInThere()){
-                Log.d("MY TAG", "OH YEAH IT'S ALL COMING TOGETHER");
-            } else{
-                Log.d("MY TAG", "AWW, NOT THERE");
-            }
-        }*/
-
-
+        appRootDirInit();
     }
 
     @Override
@@ -104,7 +89,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 RadioButton rb = findViewById(i);
-                if(rb != null && rb.isChecked()){
+                if (rb != null && rb.isChecked()) {
                     componentToDmgDescriptions.put("roofDmg", rb.getText().toString());
                 }
             }
@@ -113,7 +98,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 RadioButton rb = findViewById(i);
-                if(rb != null && rb.isChecked()){
+                if (rb != null && rb.isChecked()) {
                     componentToDmgDescriptions.put("windowsDmg", rb.getText().toString());
                 }
             }
@@ -122,7 +107,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 RadioButton rb = findViewById(i);
-                if(rb != null && rb.isChecked()){
+                if (rb != null && rb.isChecked()) {
                     componentToDmgDescriptions.put("wallsDmg", rb.getText().toString());
                 }
             }
@@ -135,7 +120,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                 toggleAddNewButtonOnOff();
 
                 byte[][] byteArrayArray = null;
-                if(photoBitmaps != null && photoBitmaps.size() > 0){
+                if (photoBitmaps != null && photoBitmaps.size() > 0) {
                     byteArrayArray = convertBitmapsToByteArrayArray(photoBitmaps);
                 }
 
@@ -161,7 +146,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                 String potentialFilename = getString(R.string.photoReferencePrefix) + mPresenter.getLatestRowID();
                 Log.d("MY TAG", "Potential Filename: " + potentialFilename);
 
-                if(isMyAppDirRootInThere()){
+                if (isMyAppDirRootInThere()) {
                     savePhotos(photoBitmaps, potentialFilename);
                 }
 
@@ -180,43 +165,47 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
     }
 
-    private void checkExternalDirState() {
-        Log.d("MY TAG", "External Storage Dir Root: " + Environment.getExternalStorageDirectory().toString());
-        Log.d("MY TAG", "External Storage Dir Root: " + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES));
+    void appRootDirInit() {
+        if (!isMyAppDirRootInThere()) {
+            boolean makeDir = makeAppRootDir();
+            if (makeDir) {
+                Log.d("MY TAG", "App root directory made");
+            } else {
+                Log.d("MY TAG", "Failed to make App root directory");
+            }
+        } else {
+            Log.d("MY TAG", "Folder already exists");
+        }
     }
 
-    boolean isExternalStorageRootWritable(){
-        return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
-    }
-
-    boolean canIWriteShitInTheExternalPublicPictureDirectoryHuh(){
-        File myAppRootDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), getString(R.string.appRootDir));
-        return myAppRootDir.mkdir();
-    }
-
-    boolean isMyAppDirRootInThere(){
+    boolean isMyAppDirRootInThere() {
         File myAppRootDirProbably = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), getString(R.string.appRootDir));
         return myAppRootDirProbably.exists();
     }
 
-    void savePhotos(ArrayList<Bitmap> photoBitmaps, String folderName){
+    private boolean makeAppRootDir() {
+        File myAppRootDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), getString(R.string.appRootDir));
+        return myAppRootDir.mkdir();
+    }
+
+    void savePhotos(ArrayList<Bitmap> photoBitmaps, String folderName) {
         File myAppRootDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-                                        String.valueOf(R.string.appRootDir));
+                getString(R.string.appRootDir));
 
         File currentPhotoSetDir = new File(myAppRootDir, folderName);
-        if(currentPhotoSetDir.exists()){
+        if (currentPhotoSetDir.exists()) {
             currentPhotoSetDir.delete();
         }
 
         boolean folderCreated = currentPhotoSetDir.mkdir();
-        if(folderCreated){
+        if (folderCreated) {
             Log.d("MY TAG", "folder " + folderName + " created");
-        } else{
+        } else {
             Toast.makeText(this, "Failed to save photos in local storage", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        for(int i = 0; i < photoBitmaps.size(); i++){
+        for (int i = 0; i < photoBitmaps.size(); i++) {
             String filename = folderName + "_#" + (i + 1) + ".jpg";
             File photoFile = new File(currentPhotoSetDir, filename);
             if (photoFile.exists()) {
@@ -245,10 +234,10 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if(resultCode == RESULT_OK && requestCode == CAMERA_REQUEST){
+        if (resultCode == RESULT_OK && requestCode == CAMERA_REQUEST) {
             assert data != null;
             Bitmap bmp = (Bitmap) data.getExtras().get("data");
-            if(photoBitmaps == null){
+            if (photoBitmaps == null) {
                 photoBitmaps = new ArrayList<>();
             }
             photoBitmaps.add(bmp);
@@ -259,7 +248,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
     private void setImageButtonResource(final Bitmap latestBitmap) {
         ImageButton imageButtonMiniGallery = findViewById(R.id.image_view_MiniGallery);
-        if(imageButtonMiniGallery.getVisibility() == View.GONE){
+        if (imageButtonMiniGallery.getVisibility() == View.GONE) {
             imageButtonMiniGallery.setVisibility(View.VISIBLE);
         }
         imageButtonMiniGallery.setImageBitmap(latestBitmap);
@@ -274,10 +263,10 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         });
     }
 
-    byte[][] convertBitmapsToByteArrayArray(ArrayList<Bitmap> photoBitmaps){
+    byte[][] convertBitmapsToByteArrayArray(ArrayList<Bitmap> photoBitmaps) {
         byte[][] byteArrayArray = null;
         byteArrayArray = new byte[photoBitmaps.size()][];
-        for(int i = 0; i < photoBitmaps.size(); i++){
+        for (int i = 0; i < photoBitmaps.size(); i++) {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             photoBitmaps.get(i).compress(Bitmap.CompressFormat.PNG, 100, stream);
             byteArrayArray[i] = stream.toByteArray();
@@ -300,7 +289,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     mPresenter.updateCurrentLongLat((double) intent.getExtras().get("longitude"),
-                                                    (double) intent.getExtras().get("latitude"));
+                            (double) intent.getExtras().get("latitude"));
                     showCurrentLongLat();
                 }
             };
@@ -340,9 +329,9 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
     @Override
     public void showToastOnDBInsert(boolean success) {
-        if(success){
+        if (success) {
             Toast.makeText(AddNewEntryActivity.this, "New Entry Added", Toast.LENGTH_SHORT).show();
-        } else{
+        } else {
             Toast.makeText(AddNewEntryActivity.this, "Failed to Add New Entry", Toast.LENGTH_SHORT).show();
         }
     }
@@ -354,7 +343,6 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         textViewLongitude.setText(setLongitude);
         textViewLatitude.setText(setLatitude);
     }
-
 
 
 }
