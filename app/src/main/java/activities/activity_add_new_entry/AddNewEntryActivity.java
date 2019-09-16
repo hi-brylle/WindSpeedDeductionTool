@@ -225,16 +225,12 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         deselectRadioGroups();
         toggleAddNewButtonOnOff();
 
-        //TODO: new sequence of steps
-
         //1. insert descriptions to DB
-//        DBInsertTask dbInsertTask = new DBInsertTask(this, mPresenter);
-//        dbInsertTask.execute(componentToDmgDescriptions, null);
-        showToastOnDBInsert(mPresenter.passDataToDBHelper(componentToDmgDescriptions, null));
+        boolean insertSuccess = mPresenter.passDataToDBHelper(componentToDmgDescriptions, null);
+        showToastOnDBInsert(insertSuccess);
 
         //2. get foldername
-        //TODO: fix the harmless off-by-one error, and NO, don't just decrement that shit, idiot
-        String folderName = getString(R.string.photoReferencePrefix) + mPresenter.getLatestRowID();
+        String folderName = mPresenter.getLatestPhotosTableName();
 
         //3. save photos
         if(photoManager.getBitmaps() != null){

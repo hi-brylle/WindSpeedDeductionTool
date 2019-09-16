@@ -94,6 +94,8 @@ public class PhotoFileIO {
         mvpView.logSomething("MY TAG", currentPhotoSetFilenames.get(latestIndex).toString());
     }
 
+    //TODO: return photofile filepaths for saving
+
     public void dumpVars(){
         if(currentPhotoSetFoldername != null){
             currentPhotoSetFoldername = null;

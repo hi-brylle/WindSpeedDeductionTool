@@ -170,7 +170,7 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
     }
 
     @Override
-    public int getLatestRowID() {
-        return getCurrentRowID();
+    public String getLatestPhotosTableName() {
+        return getCurrentPhotosTableName();
     }
 }

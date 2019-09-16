@@ -45,8 +45,8 @@ public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAd
     }
 
     @Override
-    public int getLatestRowID() {
-        return dbHelper.getLatestRowID();
+    public String getLatestPhotosTableName() {
+        return dbHelper.getLatestPhotosTableName();
     }
 
     void addGPSFixListener(IGPSFixListener listener){
