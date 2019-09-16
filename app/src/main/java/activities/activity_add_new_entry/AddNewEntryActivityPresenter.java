@@ -33,15 +33,15 @@ public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAd
     }
 
     @Override
-    public boolean passDataToDBHelper(HashMap<String, String> componentToDmgDescriptions, byte[][] byteArrayArray) {
-        createEntryModel(componentToDmgDescriptions, byteArrayArray);
+    public boolean passDataToDBHelper(HashMap<String, String> componentToDmgDescriptions) {
+        createEntryModel(componentToDmgDescriptions);
         return mvpModel.insertDataToDB(dbHelper);
     }
 
     @Override
-    public void createEntryModel(HashMap<String, String> componentToDmgDescriptions, byte[][] byteArrayArray) {
+    public void createEntryModel(HashMap<String, String> componentToDmgDescriptions) {
         EntryModelFactory modelFactory = new EntryModelFactory();
-        setMvpModel(modelFactory.getEntryModel(longitude, latitude, componentToDmgDescriptions, byteArrayArray));
+        setMvpModel(modelFactory.getEntryModel(longitude, latitude, componentToDmgDescriptions));
     }
 
     @Override

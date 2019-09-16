@@ -222,7 +222,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         toggleAddNewButtonOnOff();
 
         //1. insert descriptions to DB
-        boolean dataInsertSuccess = mPresenter.passDataToDBHelper(componentToDmgDescriptions, null);
+        boolean dataInsertSuccess = mPresenter.passDataToDBHelper(componentToDmgDescriptions);
         showToastOnDBInsert(dataInsertSuccess);
 
         //2. get foldername

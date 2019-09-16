@@ -16,8 +16,8 @@ public interface IAddNewEntryActivityMVP {
 
     interface IAddNewEntryActivityPresenter{
         void updateCurrentLongLat(double longitude, double latitude);
-        boolean passDataToDBHelper(HashMap<String, String> componentToDmgDescriptions, byte[][] byteArrayArray);
-        void createEntryModel(HashMap<String, String> componentToDmgDescriptions, byte[][] byteArrayArray);
+        boolean passDataToDBHelper(HashMap<String, String> componentToDmgDescriptions);
+        void createEntryModel(HashMap<String, String> componentToDmgDescriptions);
         String getLatestPhotosTableName();
         boolean passFilepathsToDBHelper(String folderName, String[] currentSetFilepaths);
     }

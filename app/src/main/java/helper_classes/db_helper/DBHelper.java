@@ -19,7 +19,7 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
     private static final String COLUMN_ROOF_DAMAGE = "roof_damage";
     private static final String COLUMN_WINDOWS_DAMAGE = "windows_damage";
     private static final String COLUMN_WALLS_DAMAGE = "wall_damage";
-    private static final String COLUMN_PHOTOS_TABLE_NAME = "filepaths_table_name";
+    private static final String COLUMN_FILEPATHS_TABLE_NAME = "filepaths_table_name";
 
     public DBHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -36,7 +36,7 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
                 COLUMN_ROOF_DAMAGE + " TEXT," +
                 COLUMN_WINDOWS_DAMAGE + " TEXT," +
                 COLUMN_WALLS_DAMAGE + " TEXT," +
-                COLUMN_PHOTOS_TABLE_NAME + " TEXT" +
+                COLUMN_FILEPATHS_TABLE_NAME + " TEXT" +
                 ")";
 
         db.execSQL(SQL_CREATE_BASE_TABLE);
@@ -56,44 +56,6 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
         long result = db.insert(TABLE_NAME_INPUTS, null, cv);
 
         return result != -1;
-    }
-
-    private boolean insert(double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg, byte[][] byteArrayArray){
-        boolean result1 = insert(longitude, latitude, roofDmg, windowsDmg, wallsDmg);
-
-        long result2 = insertPhotoBLOB(byteArrayArray);
-
-        return result1 && result2 != -1;
-    }
-
-    private long insertPhotoBLOB(byte [][] byteArrayArray){
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-
-        final String column_id = "_id";
-        final String column_photos = "photos";
-
-        String SQL_CREATE_PHOTOS_TABLE = "create table " +
-                getCurrentPhotosTableName() + " (" +
-                column_id + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                column_photos + " BLOB" +
-                ")";
-
-        db.execSQL(SQL_CREATE_PHOTOS_TABLE);
-
-        long[] results = new long[byteArrayArray.length];
-        for(int i = 0; i < byteArrayArray.length; i++){
-            cv.put(column_photos, byteArrayArray[i]);
-            results[i] = db.insert(getCurrentPhotosTableName(), null, cv);
-        }
-
-        for(int i = 0; i < byteArrayArray.length; i++){
-            if(results[i] == -1){
-                return -1;
-            }
-        }
-
-        return results[0];
     }
 
     private boolean insert(String targetFolder, String[] filepaths){
@@ -139,9 +101,9 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
         cv.put(COLUMN_WALLS_DAMAGE, wallsDmg);
 
         if(isEntriesTableEmpty()){
-            cv.put(COLUMN_PHOTOS_TABLE_NAME, "photos_for_id_1");
+            cv.put(COLUMN_FILEPATHS_TABLE_NAME, "photos_for_id_1");
         } else{
-            cv.put(COLUMN_PHOTOS_TABLE_NAME, "photos_for_id_" + getCurrentRowID());
+            cv.put(COLUMN_FILEPATHS_TABLE_NAME, "photos_for_id_" + getCurrentRowID());
         }
 
         return cv;
@@ -176,22 +138,17 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
 
     private String getCurrentPhotosTableName(){
         SQLiteDatabase db = this.getWritableDatabase();
-        String SQL_GET_TABLE_NAMES = "SELECT " + COLUMN_PHOTOS_TABLE_NAME + " FROM " + TABLE_NAME_INPUTS;
+        String SQL_GET_TABLE_NAMES = "SELECT " + COLUMN_FILEPATHS_TABLE_NAME + " FROM " + TABLE_NAME_INPUTS;
         Cursor c = db.rawQuery(SQL_GET_TABLE_NAMES, null);
 
         String columnName;
         assert c != null;
         c.moveToLast();
-        columnName = c.getString(c.getColumnIndex(COLUMN_PHOTOS_TABLE_NAME));
+        columnName = c.getString(c.getColumnIndex(COLUMN_FILEPATHS_TABLE_NAME));
 
         c.close();
 
         return columnName;
-    }
-
-    @Override
-    public boolean insertToDB(double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg, byte[][] byteArrayArray) {
-        return insert(longitude, latitude, roofDmg, windowsDmg, wallsDmg, byteArrayArray);
     }
 
     @Override
