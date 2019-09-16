@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -257,6 +256,11 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     }
 
     @Override
+    public void toastSomething(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode == RESULT_OK && requestCode == photoManager.CAMERA_REQUEST) {
             assert data != null;
@@ -277,33 +281,25 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         deselectRadioGroups();
         toggleAddNewButtonOnOff();
 
-        ArrayList<Bitmap> photoBitmaps = photoManager.getBitmaps();
+        //TODO: new sequence of steps
 
-        byte[][] byteArrayArray = null;
-        if (photoBitmaps != null && photoBitmaps.size() > 0) {
-            byteArrayArray = convertBitmapsToByteArrayArray(photoBitmaps);
-        }
-        final byte[][] finalByteArrayArray = byteArrayArray;
+        //1. insert descriptions to DB
         DBInsertTask dbInsertTask = new DBInsertTask(this, mPresenter);
-        dbInsertTask.execute(componentToDmgDescriptions, finalByteArrayArray);
+        dbInsertTask.execute(componentToDmgDescriptions, null);
 
-        //kinda dangerous, but im hoping what i read somewhere, sometime, about
-        //how SQLite operations are actually single-threaded, internally, is true
+        //2. get foldername
         String folderName = getString(R.string.photoReferencePrefix) + mPresenter.getLatestRowID();
 
-        //TODO: new sequence of steps
-        //1. insert descriptions to DB
-        //2. get foldername
         //3. save photos
-        //4. insert filepaths to DB
-
-        if(photoBitmaps != null){
-            if (photoFileIO.doesAppRootDirExist()) {
-                savePhotos(photoBitmaps, folderName);
-            }
+        if(photoManager.getBitmaps() != null){
+            photoFileIO.savePhotoSet(photoManager.getBitmaps(), folderName);
         }
 
+        //4. insert filepaths to DB
+        //TODO: insert filepaths to DB
+
         photoManager.dumpBitmaps();
+        photoFileIO.dumpVars();
 
         final ImageButton imageButtonMiniGallery = findViewById(R.id.image_button_MiniGallery);
         imageButtonMiniGallery.setVisibility(View.GONE);

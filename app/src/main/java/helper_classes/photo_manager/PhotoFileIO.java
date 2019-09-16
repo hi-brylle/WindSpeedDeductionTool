@@ -6,6 +6,7 @@ import android.os.Environment;
 import com.example.windspeeddeductiontool.R;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 import activities.activity_add_new_entry.IAddNewEntryActivityMVP;
@@ -45,7 +46,44 @@ public class PhotoFileIO {
     }
 
     public void savePhotoSet(ArrayList<Bitmap> photoBitmaps, String folderName){
+//        File myAppRootDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+//                getString(R.string.appRootDir));
 
+        currentPhotoSetFoldername = new File(appRootDirectory, folderName);
+        if (currentPhotoSetFoldername.exists()) {
+            currentPhotoSetFoldername.delete();
+        }
+
+        boolean folderCreated = currentPhotoSetFoldername.mkdir();
+        if (folderCreated) {
+            mvpView.logSomething("MY TAG", "folder " + folderName + " created");
+        } else {
+            mvpView.toastSomething("Failed to save photos in local storage");
+            return;
+        }
+
+        for (int i = 0; i < photoBitmaps.size(); i++) {
+            String filename = folderName + "_#" + (i + 1) + ".jpg";
+            File photoFile = new File(currentPhotoSetFoldername, filename);
+            if (photoFile.exists()) {
+                photoFile.delete();
+            }
+
+            try {
+                FileOutputStream out = new FileOutputStream(photoFile);
+                photoBitmaps.get(i).compress(Bitmap.CompressFormat.JPEG, 100, out);
+                out.flush();
+                out.close();
+
+                mvpView.logSomething("MY TAG", "Saved" + filename);
+
+                currentPhotoSetFilenames.add(photoFile.getAbsoluteFile());
+                mvpView.logSomething("MY TAG", currentPhotoSetFilenames.get(i).toString());
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void dumpVars(){
