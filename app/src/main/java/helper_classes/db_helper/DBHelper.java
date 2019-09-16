@@ -19,7 +19,7 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
     private static final String COLUMN_ROOF_DAMAGE = "roof_damage";
     private static final String COLUMN_WINDOWS_DAMAGE = "windows_damage";
     private static final String COLUMN_WALLS_DAMAGE = "wall_damage";
-    private static final String COLUMN_PHOTOS_TABLE_NAME = "photos_table_name";
+    private static final String COLUMN_PHOTOS_TABLE_NAME = "filepaths_table_name";
 
     public DBHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, 1);

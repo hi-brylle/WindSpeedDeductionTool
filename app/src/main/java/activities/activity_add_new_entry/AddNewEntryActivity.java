@@ -23,7 +23,6 @@ import com.example.windspeeddeductiontool.R;
 import java.util.HashMap;
 
 import activities.activity_gallery.GalleryActivity;
-import helper_classes.DBInsertTask;
 import helper_classes.db_helper.DBHelper;
 import helper_classes.photo_manager.IPhotoManagerBitmapListener;
 import helper_classes.photo_manager.PhotoFileIO;
@@ -120,13 +119,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
         buttonAddNewEntry.setOnClickListener(this);
 
-        imageButtonAttachPhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                photoManager.takeSinglePhoto();
-            }
-        });
-
+        imageButtonAttachPhoto.setOnClickListener(this);
 
     }
 
@@ -218,6 +211,9 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     public void onClick(View view) {
         if (view.getId() == R.id.button_AddNewEntry) {
             addNewEntry();
+        } else
+        if(view.getId() == R.id.image_button_AttachPhoto){
+            photoManager.takeSinglePhoto();
         }
     }
 
@@ -226,17 +222,23 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         toggleAddNewButtonOnOff();
 
         //1. insert descriptions to DB
-        boolean insertSuccess = mPresenter.passDataToDBHelper(componentToDmgDescriptions, null);
-        showToastOnDBInsert(insertSuccess);
+        boolean dataInsertSuccess = mPresenter.passDataToDBHelper(componentToDmgDescriptions, null);
+        showToastOnDBInsert(dataInsertSuccess);
 
         //2. get foldername
         String folderName = mPresenter.getLatestPhotosTableName();
 
-        //3. save photos
         if(photoManager.getBitmaps() != null){
+            //3. save photos
             photoFileIO.savePhotoSet(photoManager.getBitmaps(), folderName);
+
             //4. insert filepaths to DB
-            mPresenter.passFilepathsToDBHelper(folderName, photoFileIO.getCurrentSetFilepaths());
+            boolean areFilepathsInserted = mPresenter.passFilepathsToDBHelper(folderName, photoFileIO.getCurrentSetFilepaths());
+            if(areFilepathsInserted){
+                Log.d("MY TAG", "Filepaths inserted");
+            } else{
+                Log.d("MY TAG", "Failed to insert filepaths");
+            }
         }
 
         photoManager.dumpBitmaps();
