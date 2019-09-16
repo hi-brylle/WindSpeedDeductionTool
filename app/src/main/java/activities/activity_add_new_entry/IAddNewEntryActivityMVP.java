@@ -9,6 +9,8 @@ public interface IAddNewEntryActivityMVP {
         void showToastOnDBInsert(boolean success);
         void showCurrentLongLat();
         void takeSinglePhoto(final int CAMERA_REQUEST);
+        String getStringFromRes(int resID);
+        void logSomething(String tag, String message);
     }
 
     interface IAddNewEntryActivityPresenter{

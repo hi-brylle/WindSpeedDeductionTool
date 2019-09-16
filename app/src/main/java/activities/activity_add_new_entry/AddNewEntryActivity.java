@@ -32,6 +32,7 @@ import activities.activity_gallery.GalleryActivity;
 import helper_classes.DBInsertTask;
 import helper_classes.db_helper.DBHelper;
 import helper_classes.photo_manager.IPhotoManagerBitmapListener;
+import helper_classes.photo_manager.PhotoFileIO;
 import helper_classes.photo_manager.PhotoManager;
 
 public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEntryActivityMVP.IAddNewEntryActivityView, View.OnClickListener {
@@ -48,6 +49,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     private BroadcastReceiver locationBroadcastReceiver;
 
     PhotoManager photoManager;
+    PhotoFileIO photoFileIO;
     final HashMap<String, String> componentToDmgDescriptions = new HashMap<>();
 
     @Override
@@ -57,8 +59,9 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
         mPresenter = new AddNewEntryActivityPresenter(this, new DBHelper(this));
         photoManager = new PhotoManager(this);
+        photoFileIO = new PhotoFileIO(this);
 
-        appRootDirInit();
+        photoFileIO.initAppDir();
     }
 
     @Override
@@ -131,29 +134,6 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         });
 
 
-    }
-
-    void appRootDirInit() {
-        if (!isMyAppDirRootInThere()) {
-            boolean makeDir = makeAppRootDir();
-            if (makeDir) {
-                Log.d("MY TAG", "App root directory made");
-            } else {
-                Log.d("MY TAG", "Failed to make App root directory");
-            }
-        } else {
-            Log.d("MY TAG", "Folder already exists");
-        }
-    }
-
-    boolean isMyAppDirRootInThere() {
-        File myAppRootDirProbably = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), getString(R.string.appRootDir));
-        return myAppRootDirProbably.exists();
-    }
-
-    private boolean makeAppRootDir() {
-        File myAppRootDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), getString(R.string.appRootDir));
-        return myAppRootDir.mkdir();
     }
 
     void savePhotos(ArrayList<Bitmap> photoBitmaps, String folderName) {
@@ -267,6 +247,16 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     }
 
     @Override
+    public String getStringFromRes(int resID) {
+        return getString(resID);
+    }
+
+    @Override
+    public void logSomething(String tag, String message) {
+        Log.d(tag, message);
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode == RESULT_OK && requestCode == photoManager.CAMERA_REQUEST) {
             assert data != null;
@@ -301,8 +291,14 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         //how SQLite operations are actually single-threaded, internally, is true
         String folderName = getString(R.string.photoReferencePrefix) + mPresenter.getLatestRowID();
 
+        //TODO: new sequence of steps
+        //1. insert descriptions to DB
+        //2. get foldername
+        //3. save photos
+        //4. insert filepaths to DB
+
         if(photoBitmaps != null){
-            if (isMyAppDirRootInThere()) {
+            if (photoFileIO.doesAppRootDirExist()) {
                 savePhotos(photoBitmaps, folderName);
             }
         }
