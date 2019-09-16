@@ -235,10 +235,9 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         //3. save photos
         if(photoManager.getBitmaps() != null){
             photoFileIO.savePhotoSet(photoManager.getBitmaps(), folderName);
+            //4. insert filepaths to DB
+            mPresenter.passFilepathsToDBHelper(folderName, photoFileIO.getCurrentSetFilepaths());
         }
-
-        //4. insert filepaths to DB
-        //TODO: insert filepaths to DB
 
         photoManager.dumpBitmaps();
         photoFileIO.dumpVars();

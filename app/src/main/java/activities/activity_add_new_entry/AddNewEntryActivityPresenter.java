@@ -49,6 +49,10 @@ public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAd
         return dbHelper.getLatestPhotosTableName();
     }
 
+    public boolean passFilepathsToDBHelper(String folderName, String[] currentSetFilepaths) {
+        return dbHelper.insertFilepaths(folderName, currentSetFilepaths);
+    }
+
     void addGPSFixListener(IGPSFixListener listener){
         gpsFixListener = listener;
     }

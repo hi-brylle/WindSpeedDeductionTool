@@ -16,14 +16,14 @@ public class PhotoFileIO {
 
     private File appRootDirectory;
     private File currentPhotoSetFoldername;
-    private ArrayList<File> currentPhotoSetFilenames;
+    private ArrayList<File> currentSetPhotoFiles;
 
     public PhotoFileIO(IAddNewEntryActivityMVP.IAddNewEntryActivityView mvpView){
         this.mvpView = mvpView;
         initAppDir();
     }
 
-    public boolean doesAppRootDirExist(){
+    private boolean doesAppRootDirExist(){
         File myAppRootDirProbably = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), mvpView.getStringFromRes(R.string.appRootDir));
         return myAppRootDirProbably.exists();
     }
@@ -77,7 +77,7 @@ public class PhotoFileIO {
 
                 mvpView.logSomething("MY TAG", "Saved " + filename);
 
-                addToCurrentPhotoSetFilenames(photoFile);
+                addToCurrentPhotoFileSet(photoFile);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -85,24 +85,32 @@ public class PhotoFileIO {
         }
     }
 
-    private void addToCurrentPhotoSetFilenames(File photoFile){
-        if(currentPhotoSetFilenames == null){
-            currentPhotoSetFilenames = new ArrayList<>();
+    private void addToCurrentPhotoFileSet(File photoFile){
+        if(currentSetPhotoFiles == null){
+            currentSetPhotoFiles = new ArrayList<>();
         }
-        currentPhotoSetFilenames.add(photoFile.getAbsoluteFile());
-        int latestIndex = currentPhotoSetFilenames.size() - 1;
-        mvpView.logSomething("MY TAG", currentPhotoSetFilenames.get(latestIndex).toString());
+        currentSetPhotoFiles.add(photoFile.getAbsoluteFile());
+        int latestIndex = currentSetPhotoFiles.size() - 1;
+        mvpView.logSomething("MY TAG", currentSetPhotoFiles.get(latestIndex).toString());
     }
 
-    //TODO: return photofile filepaths for saving
+    public String[] getCurrentSetFilepaths(){
+        String [] currentSetFilepaths = new String[currentSetPhotoFiles.size()];
+
+        for(int i = 0; i < currentSetFilepaths.length; i++){
+            currentSetFilepaths[i] = currentSetPhotoFiles.get(i).toString();
+        }
+
+        return currentSetFilepaths;
+    }
 
     public void dumpVars(){
         if(currentPhotoSetFoldername != null){
             currentPhotoSetFoldername = null;
         }
-        if(currentPhotoSetFilenames != null){
-            currentPhotoSetFilenames.clear();
-            currentPhotoSetFilenames = null;
+        if(currentSetPhotoFiles != null){
+            currentSetPhotoFiles.clear();
+            currentSetPhotoFiles = null;
         }
     }
 }

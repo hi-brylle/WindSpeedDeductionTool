@@ -19,6 +19,7 @@ public interface IAddNewEntryActivityMVP {
         boolean passDataToDBHelper(HashMap<String, String> componentToDmgDescriptions, byte[][] byteArrayArray);
         void createEntryModel(HashMap<String, String> componentToDmgDescriptions, byte[][] byteArrayArray);
         String getLatestPhotosTableName();
+        boolean passFilepathsToDBHelper(String folderName, String[] currentSetFilepaths);
     }
 
     interface IAddNewEntryActivityModel{

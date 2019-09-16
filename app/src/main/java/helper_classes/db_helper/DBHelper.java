@@ -96,6 +96,36 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
         return results[0];
     }
 
+    private boolean insert(String targetFolder, String[] filepaths){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        final String column_id = "_id";
+        final String column_filepaths = "filepaths";
+
+        String SQL_CREATE_FILEPATHS_TABLE = "create table " +
+                getCurrentPhotosTableName() + " (" +
+                column_id + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                column_filepaths + " TEXT" +
+                ")";
+
+        db.execSQL(SQL_CREATE_FILEPATHS_TABLE);
+
+        long[] results = new long[filepaths.length];
+        for(int i = 0; i < filepaths.length; i++){
+            cv.put(column_filepaths, filepaths[i]);
+            results[i] = db.insert(targetFolder, null, cv);
+        }
+
+        for(int i = 0; i < filepaths.length; i++){
+            if(results[i] == -1){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private ContentValues fillContentValues(double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg){
         ContentValues cv = new ContentValues();
 
@@ -172,5 +202,10 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
     @Override
     public String getLatestPhotosTableName() {
         return getCurrentPhotosTableName();
+    }
+
+    @Override
+    public boolean insertFilepaths(String folderName, String[] currentSetFilepaths) {
+        return insert(folderName, currentSetFilepaths);
     }
 }
