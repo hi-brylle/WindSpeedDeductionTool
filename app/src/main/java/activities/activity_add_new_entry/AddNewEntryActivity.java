@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -21,10 +20,6 @@ import android.widget.Toast;
 
 import com.example.windspeeddeductiontool.R;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import activities.activity_gallery.GalleryActivity;
@@ -135,44 +130,6 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
     }
 
-    void savePhotos(ArrayList<Bitmap> photoBitmaps, String folderName) {
-        File myAppRootDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-                getString(R.string.appRootDir));
-
-        File currentPhotoSetDir = new File(myAppRootDir, folderName);
-        if (currentPhotoSetDir.exists()) {
-            currentPhotoSetDir.delete();
-        }
-
-        boolean folderCreated = currentPhotoSetDir.mkdir();
-        if (folderCreated) {
-            Log.d("MY TAG", "folder " + folderName + " created");
-        } else {
-            Toast.makeText(this, "Failed to save photos in local storage", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        for (int i = 0; i < photoBitmaps.size(); i++) {
-            String filename = folderName + "_#" + (i + 1) + ".jpg";
-            File photoFile = new File(currentPhotoSetDir, filename);
-            if (photoFile.exists()) {
-                photoFile.delete();
-            }
-
-            try {
-                FileOutputStream out = new FileOutputStream(photoFile);
-                photoBitmaps.get(i).compress(Bitmap.CompressFormat.JPEG, 100, out);
-                out.flush();
-                out.close();
-
-                Log.d("MY TAG", "Saved " + filename);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
-
     private void setMiniGalleryButtonResource(final Bitmap latestBitmap) {
         final ImageButton imageButtonMiniGallery = findViewById(R.id.image_button_MiniGallery);
         if (imageButtonMiniGallery.getVisibility() == View.GONE) {
@@ -188,18 +145,6 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                 startActivity(galleryIntent);
             }
         });
-    }
-
-    byte[][] convertBitmapsToByteArrayArray(ArrayList<Bitmap> photoBitmaps) {
-        byte[][] byteArrayArray = null;
-        byteArrayArray = new byte[photoBitmaps.size()][];
-        for (int i = 0; i < photoBitmaps.size(); i++) {
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            photoBitmaps.get(i).compress(Bitmap.CompressFormat.PNG, 100, stream);
-            byteArrayArray[i] = stream.toByteArray();
-        }
-
-        return byteArrayArray;
     }
 
     private void deselectRadioGroups() {
@@ -256,8 +201,8 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     }
 
     @Override
-    public void toastSomething(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+    public void toastSomething(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -268,7 +213,6 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
             photoManager.addBitmap(bmp);
         }
     }
-
 
     @Override
     public void onClick(View view) {
@@ -284,10 +228,12 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         //TODO: new sequence of steps
 
         //1. insert descriptions to DB
-        DBInsertTask dbInsertTask = new DBInsertTask(this, mPresenter);
-        dbInsertTask.execute(componentToDmgDescriptions, null);
+//        DBInsertTask dbInsertTask = new DBInsertTask(this, mPresenter);
+//        dbInsertTask.execute(componentToDmgDescriptions, null);
+        showToastOnDBInsert(mPresenter.passDataToDBHelper(componentToDmgDescriptions, null));
 
         //2. get foldername
+        //TODO: fix the harmless off-by-one error, and NO, don't just decrement that shit, idiot
         String folderName = getString(R.string.photoReferencePrefix) + mPresenter.getLatestRowID();
 
         //3. save photos

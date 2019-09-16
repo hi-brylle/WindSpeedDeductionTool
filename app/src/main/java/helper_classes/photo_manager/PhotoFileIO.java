@@ -46,10 +46,9 @@ public class PhotoFileIO {
     }
 
     public void savePhotoSet(ArrayList<Bitmap> photoBitmaps, String folderName){
-//        File myAppRootDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-//                getString(R.string.appRootDir));
-
-        currentPhotoSetFoldername = new File(appRootDirectory, folderName);
+        if(currentPhotoSetFoldername == null){
+            currentPhotoSetFoldername = new File(appRootDirectory, folderName);
+        }
         if (currentPhotoSetFoldername.exists()) {
             currentPhotoSetFoldername.delete();
         }
@@ -58,6 +57,7 @@ public class PhotoFileIO {
         if (folderCreated) {
             mvpView.logSomething("MY TAG", "folder " + folderName + " created");
         } else {
+            mvpView.logSomething("MY TAG", "Failed to save photos in local storage");
             mvpView.toastSomething("Failed to save photos in local storage");
             return;
         }
@@ -75,15 +75,23 @@ public class PhotoFileIO {
                 out.flush();
                 out.close();
 
-                mvpView.logSomething("MY TAG", "Saved" + filename);
+                mvpView.logSomething("MY TAG", "Saved " + filename);
 
-                currentPhotoSetFilenames.add(photoFile.getAbsoluteFile());
-                mvpView.logSomething("MY TAG", currentPhotoSetFilenames.get(i).toString());
+                addToCurrentPhotoSetFilenames(photoFile);
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void addToCurrentPhotoSetFilenames(File photoFile){
+        if(currentPhotoSetFilenames == null){
+            currentPhotoSetFilenames = new ArrayList<>();
+        }
+        currentPhotoSetFilenames.add(photoFile.getAbsoluteFile());
+        int latestIndex = currentPhotoSetFilenames.size() - 1;
+        mvpView.logSomething("MY TAG", currentPhotoSetFilenames.get(latestIndex).toString());
     }
 
     public void dumpVars(){

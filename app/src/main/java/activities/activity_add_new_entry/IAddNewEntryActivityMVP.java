@@ -11,7 +11,7 @@ public interface IAddNewEntryActivityMVP {
         void takeSinglePhoto(final int CAMERA_REQUEST);
         String getStringFromRes(int resID);
         void logSomething(String tag, String message);
-        void toastSomething(String s);
+        void toastSomething(String message);
     }
 
     interface IAddNewEntryActivityPresenter{
