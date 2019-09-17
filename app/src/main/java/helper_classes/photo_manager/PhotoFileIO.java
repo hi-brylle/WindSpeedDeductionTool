@@ -15,11 +15,12 @@ public class PhotoFileIO {
     private IAddNewEntryActivityMVP.IAddNewEntryActivityView mvpView;
 
     private File appRootDirectory;
-    private File currentPhotoSetFoldername;
-    private ArrayList<File> currentSetPhotoFiles;
+    private File currentPhotoSetDir;
+    private ArrayList<File> currentPhotoSetFiles;
 
     public PhotoFileIO(IAddNewEntryActivityMVP.IAddNewEntryActivityView mvpView) {
         this.mvpView = mvpView;
+
         initAppDir();
     }
 
@@ -33,7 +34,7 @@ public class PhotoFileIO {
         return appRootDirectory.mkdir();
     }
 
-    public void initAppDir() {
+    private void initAppDir() {
         if (!doesAppRootDirExist()) {
             if (makeAppRootDir()) {
                 mvpView.logSomething("MY TAG", "App root directory made");
@@ -41,30 +42,40 @@ public class PhotoFileIO {
                 mvpView.logSomething("MY TAG", "Failed to make App root directory");
             }
         } else {
+            appRootDirectory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), mvpView.getStringFromRes(R.string.appRootDir));
             mvpView.logSomething("MY TAG", "App root directory already exists");
         }
     }
 
-    public void savePhotoSet(ArrayList<Bitmap> photoBitmaps, String folderName) {
-        if (currentPhotoSetFoldername == null) {
-            currentPhotoSetFoldername = new File(appRootDirectory, folderName);
-        }
-        if (currentPhotoSetFoldername.exists()) {
-            currentPhotoSetFoldername.delete();
-        }
+    private boolean doesCurrentFolderDirExist(String folderName){
+        File currentDirProbably = new File(appRootDirectory.toString(), folderName);
+        return currentDirProbably.exists();
+    }
 
-        boolean folderCreated = currentPhotoSetFoldername.mkdir();
-        if (folderCreated) {
-            mvpView.logSomething("MY TAG", "folder " + folderName + " created");
-        } else {
-            mvpView.logSomething("MY TAG", "Failed to save photos in local storage");
-            mvpView.toastSomething("Failed to save photos in local storage");
-            return;
+    private boolean makeCurrentFolderDir(String folderName){
+        currentPhotoSetDir = new File(appRootDirectory.toString(), folderName);
+        return currentPhotoSetDir.mkdirs();
+    }
+
+    private void initCurrentFolderDir(String folderName){
+        if(!doesCurrentFolderDirExist(folderName)){
+            if(makeCurrentFolderDir(folderName)){
+                mvpView.logSomething("MY TAG", "Current directory made");
+            } else{
+                mvpView.logSomething("MY TAG", "Failed to make current directory");
+            }
+        } else{
+            currentPhotoSetDir = new File(appRootDirectory.toString(), folderName);
+            mvpView.logSomething("MY TAG", "Current directory already exists");
         }
+    }
+
+    public void savePhotoSet(ArrayList<Bitmap> photoBitmaps, String folderName) {
+        initCurrentFolderDir(folderName);
 
         for (int i = 0; i < photoBitmaps.size(); i++) {
-            String filename = folderName + "_#" + (i + 1) + ".jpg";
-            File photoFile = new File(currentPhotoSetFoldername, filename);
+            String filename = folderName + "_" + (i + 1) + ".jpg";
+            File photoFile = new File(currentPhotoSetDir, filename);
             if (photoFile.exists()) {
                 photoFile.delete();
             }
@@ -86,31 +97,31 @@ public class PhotoFileIO {
     }
 
     private void addToCurrentPhotoFileSet(File photoFile) {
-        if (currentSetPhotoFiles == null) {
-            currentSetPhotoFiles = new ArrayList<>();
+        if (currentPhotoSetFiles == null || currentPhotoSetFiles.size() == 0) {
+            currentPhotoSetFiles = new ArrayList<>();
         }
-        currentSetPhotoFiles.add(photoFile.getAbsoluteFile());
-        int latestIndex = currentSetPhotoFiles.size() - 1;
-        mvpView.logSomething("MY TAG", currentSetPhotoFiles.get(latestIndex).toString());
+        currentPhotoSetFiles.add(photoFile/*.getAbsoluteFile()*/);
+        int latestIndex = currentPhotoSetFiles.size() - 1;
+        mvpView.logSomething("MY TAG", currentPhotoSetFiles.get(latestIndex).toString());
     }
 
     public String[] getCurrentSetFilepaths() {
-        String[] currentSetFilepaths = new String[currentSetPhotoFiles.size()];
+        String[] currentSetFilepaths = new String[currentPhotoSetFiles.size()];
 
         for (int i = 0; i < currentSetFilepaths.length; i++) {
-            currentSetFilepaths[i] = currentSetPhotoFiles.get(i).toString();
+            currentSetFilepaths[i] = currentPhotoSetFiles.get(i).getAbsolutePath();
         }
 
         return currentSetFilepaths;
     }
 
     public void dumpVars() {
-        if (currentPhotoSetFoldername != null) {
-            currentPhotoSetFoldername = null;
+        if (currentPhotoSetDir != null) {
+            currentPhotoSetDir = null;
         }
-        if (currentSetPhotoFiles != null) {
-            currentSetPhotoFiles.clear();
-            currentSetPhotoFiles = null;
+        if (currentPhotoSetFiles != null) {
+            currentPhotoSetFiles.clear();
+            currentPhotoSetFiles = null;
         }
     }
 }

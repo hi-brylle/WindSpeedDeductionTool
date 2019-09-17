@@ -28,6 +28,7 @@ public class PhotoManager {
         }
 
         photoBitmaps.add(bitmap);
+        mvpView.logSomething("MY TAG", "BITMAP ADDED");
 
         iPhotoManagerBitmapListener.onNonNullPhotoBitmap();
     }

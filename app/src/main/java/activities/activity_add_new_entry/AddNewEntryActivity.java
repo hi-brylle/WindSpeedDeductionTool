@@ -42,7 +42,6 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     private BroadcastReceiver locationBroadcastReceiver;
 
     PhotoManager photoManager;
-    PhotoFileIO photoFileIO;
     final HashMap<String, String> componentToDmgDescriptions = new HashMap<>();
 
     @Override
@@ -52,9 +51,6 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
         mPresenter = new AddNewEntryActivityPresenter(this, new DBHelper(this));
         photoManager = new PhotoManager(this);
-        photoFileIO = new PhotoFileIO(this);
-
-        photoFileIO.initAppDir();
     }
 
     @Override
@@ -221,19 +217,23 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         deselectRadioGroups();
         toggleAddNewButtonOnOff();
 
+        PhotoFileIO photoFileIO = new PhotoFileIO(this);
+
         //1. insert descriptions to DB
         boolean dataInsertSuccess = mPresenter.passDataToDBHelper(componentToDmgDescriptions);
         showToastOnDBInsert(dataInsertSuccess);
 
-        //2. get foldername
-        String folderName = mPresenter.getLatestPhotosTableName();
+        if(photoManager.getBitmaps() != null && photoManager.getBitmaps().size() > 0){
+            //2. get foldername
+            String folderName = mPresenter.getLatestPhotosTableName();
+            logSomething("MY TAG", "Foldername: " + folderName);
 
-        if(photoManager.getBitmaps() != null){
             //3. save photos
             photoFileIO.savePhotoSet(photoManager.getBitmaps(), folderName);
 
             //4. insert filepaths to DB
-            boolean areFilepathsInserted = mPresenter.passFilepathsToDBHelper(folderName, photoFileIO.getCurrentSetFilepaths());
+            String[] currentSetFilepaths = photoFileIO.getCurrentSetFilepaths();
+            boolean areFilepathsInserted = mPresenter.passFilepathsToDBHelper(folderName, currentSetFilepaths);
             if(areFilepathsInserted){
                 Log.d("MY TAG", "Filepaths inserted");
             } else{
@@ -242,7 +242,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         }
 
         photoManager.dumpBitmaps();
-        photoFileIO.dumpVars();
+
 
         final ImageButton imageButtonMiniGallery = findViewById(R.id.image_button_MiniGallery);
         imageButtonMiniGallery.setVisibility(View.GONE);

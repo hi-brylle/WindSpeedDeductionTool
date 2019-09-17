@@ -9,6 +9,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
+import java.util.HashMap;
+
 public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
     private static final String DATABASE_NAME = "entries.db";
     private static final String TABLE_NAME_INPUTS = "entries";
@@ -152,7 +154,11 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
     }
 
     @Override
-    public boolean insertToDB(double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg) {
+    public boolean insertToDB(double longitude, double latitude, HashMap<String, String> componentToDmgDescriptions) {
+        String roofDmg = componentToDmgDescriptions.get("roofDmg");
+        String windowsDmg = componentToDmgDescriptions.get("windowsDmg");
+        String wallsDmg = componentToDmgDescriptions.get("wallsDmg");
+
         return insert(longitude, latitude, roofDmg, windowsDmg, wallsDmg);
     }
 

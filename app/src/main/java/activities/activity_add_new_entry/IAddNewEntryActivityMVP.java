@@ -2,8 +2,6 @@ package activities.activity_add_new_entry;
 
 import java.util.HashMap;
 
-import helper_classes.db_helper.IDBHelper;
-
 public interface IAddNewEntryActivityMVP {
     interface IAddNewEntryActivityView{
         void showToastOnDBInsert(boolean success);
@@ -17,12 +15,11 @@ public interface IAddNewEntryActivityMVP {
     interface IAddNewEntryActivityPresenter{
         void updateCurrentLongLat(double longitude, double latitude);
         boolean passDataToDBHelper(HashMap<String, String> componentToDmgDescriptions);
-        void createEntryModel(HashMap<String, String> componentToDmgDescriptions);
         String getLatestPhotosTableName();
         boolean passFilepathsToDBHelper(String folderName, String[] currentSetFilepaths);
     }
 
     interface IAddNewEntryActivityModel{
-        boolean insertDataToDB(IDBHelper dbHelper);
+
     }
 }

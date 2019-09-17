@@ -2,7 +2,6 @@ package activities.activity_add_new_entry;
 
 import java.util.HashMap;
 
-import activities.activity_add_new_entry.model.EntryModelFactory;
 import helper_classes.db_helper.IDBHelper;
 
 public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAddNewEntryActivityPresenter {
@@ -34,14 +33,7 @@ public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAd
 
     @Override
     public boolean passDataToDBHelper(HashMap<String, String> componentToDmgDescriptions) {
-        createEntryModel(componentToDmgDescriptions);
-        return mvpModel.insertDataToDB(dbHelper);
-    }
-
-    @Override
-    public void createEntryModel(HashMap<String, String> componentToDmgDescriptions) {
-        EntryModelFactory modelFactory = new EntryModelFactory();
-        setMvpModel(modelFactory.getEntryModel(longitude, latitude, componentToDmgDescriptions));
+        return dbHelper.insertToDB(longitude, latitude, componentToDmgDescriptions);
     }
 
     @Override
@@ -55,10 +47,6 @@ public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAd
 
     void addGPSFixListener(IGPSFixListener listener){
         gpsFixListener = listener;
-    }
-
-    private void setMvpModel(IAddNewEntryActivityMVP.IAddNewEntryActivityModel mvpModel) {
-        this.mvpModel = mvpModel;
     }
 
     public double getLongitude() {
