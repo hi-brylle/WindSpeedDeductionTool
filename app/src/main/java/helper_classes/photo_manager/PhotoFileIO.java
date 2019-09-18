@@ -21,7 +21,7 @@ public class PhotoFileIO {
     private ArrayList<File> currentPhotoSetFiles;
     private ArrayList<Uri> currentPhotoSetUri;
 
-    private static int counter = 0;
+    private int counter = 0;
 
     public PhotoFileIO(IAddNewEntryActivityMVP.IAddNewEntryActivityView mvpView) {
         this.mvpView = mvpView;
@@ -111,10 +111,10 @@ public class PhotoFileIO {
     }
 
     public String[] getCurrentSetFilepaths() {
-        String[] currentSetFilepaths = new String[currentPhotoSetFiles.size()];
+        String[] currentSetFilepaths = new String[currentPhotoSetUri.size()];
 
         for (int i = 0; i < currentSetFilepaths.length; i++) {
-            currentSetFilepaths[i] = currentPhotoSetFiles.get(i).getAbsolutePath();
+            currentSetFilepaths[i] = currentPhotoSetUri.get(i).getPath().replace("//","/");
         }
 
         return currentSetFilepaths;
@@ -138,6 +138,10 @@ public class PhotoFileIO {
         return currentPhotoSetUri.get(currentPhotoSetUri.size() - 1);
     }
 
+    public boolean doImagesExist(){
+        return currentPhotoSetUri != null && currentPhotoSetUri.size() > 0;
+    }
+
     public void dumpVars() {
         if (currentPhotoSetDir != null) {
             currentPhotoSetDir = null;
@@ -150,6 +154,8 @@ public class PhotoFileIO {
             currentPhotoSetUri.clear();
             currentPhotoSetUri = null;
         }
+
+        counter  = 0;
     }
 
 

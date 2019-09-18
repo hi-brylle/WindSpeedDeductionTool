@@ -28,7 +28,6 @@ import java.util.HashMap;
 
 import activities.activity_gallery.GalleryActivity;
 import helper_classes.db_helper.DBHelper;
-import helper_classes.photo_manager.IPhotoManagerBitmapListener;
 import helper_classes.photo_manager.PhotoFileIO;
 import helper_classes.photo_manager.PhotoManager;
 
@@ -195,17 +194,19 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     }
 
     @Override
-    public void takeSinglePhoto(int CAMERA_REQUEST) {
+    public void takeAndSaveSinglePhoto(int CAMERA_REQUEST) {
         /*Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(cameraIntent, CAMERA_REQUEST);*/
 
         File file = null;
         try{
-            file = photoFileIO.createImageFile(mPresenter.getLatestPhotosTableName());
+            file = photoFileIO.createImageFile(mPresenter.getCurrentFilepathsTableName());
             photoFileIO.addToCurrentPhotoFileset(FileProvider.getUriForFile(this, PhotoManager.CAMERA_IMAGE_FILE_PROVIDER, file));
+
             Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
             cameraIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoFileIO.getLatestUri());
+
             startActivityForResult(cameraIntent, CAMERA_REQUEST);
         } catch (IOException e){
             e.printStackTrace();
@@ -227,6 +228,8 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                 if (imageButtonMiniGallery.getVisibility() == View.GONE) {
                     imageButtonMiniGallery.setVisibility(View.VISIBLE);
                 }
+
+                Log.d("path", photoFileIO.getLatestUri().getPath().replace("//", "/"));
                 imageButtonMiniGallery.setImageURI(photoFileIO.getLatestUri());
             }
         }
@@ -248,19 +251,13 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         deselectRadioGroups();
         toggleAddNewButtonOnOff();
 
-        //1. insert descriptions to DB
         boolean dataInsertSuccess = mPresenter.passDataToDBHelper(componentToDmgDescriptions);
         showToastOnDBInsert(dataInsertSuccess);
 
-        if(photoManager.getBitmaps() != null && photoManager.getBitmaps().size() > 0){
-            //2. get foldername
-            String folderName = mPresenter.getLatestPhotosTableName();
+        if(photoFileIO.doImagesExist()){
+            String folderName = mPresenter.getLatestFilepathsTableName();
             logSomething("MY TAG", "Foldername: " + folderName);
 
-            //3. save photos
-            photoFileIO.savePhotoSet(photoManager.getBitmaps(), folderName);
-
-            //4. insert filepaths to DB
             String[] currentSetFilepaths = photoFileIO.getCurrentSetFilepaths();
             boolean areFilepathsInserted = mPresenter.passFilepathsToDBHelper(folderName, currentSetFilepaths);
             if(areFilepathsInserted){
@@ -272,7 +269,6 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
         photoManager.dumpBitmaps();
         photoFileIO.dumpVars();
-
 
         final ImageButton imageButtonMiniGallery = findViewById(R.id.image_button_MiniGallery);
         imageButtonMiniGallery.setVisibility(View.GONE);

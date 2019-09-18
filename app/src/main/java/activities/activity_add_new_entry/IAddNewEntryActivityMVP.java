@@ -6,7 +6,7 @@ public interface IAddNewEntryActivityMVP {
     interface IAddNewEntryActivityView{
         void showToastOnDBInsert(boolean success);
         void showCurrentLongLat();
-        void takeSinglePhoto(final int CAMERA_REQUEST);
+        void takeAndSaveSinglePhoto(final int CAMERA_REQUEST);
         String getStringFromRes(int resID);
         void logSomething(String tag, String message);
         void toastSomething(String message);
@@ -15,7 +15,8 @@ public interface IAddNewEntryActivityMVP {
     interface IAddNewEntryActivityPresenter{
         void updateCurrentLongLat(double longitude, double latitude);
         boolean passDataToDBHelper(HashMap<String, String> componentToDmgDescriptions);
-        String getLatestPhotosTableName();
+        String getCurrentFilepathsTableName();
+        String getLatestFilepathsTableName();
         boolean passFilepathsToDBHelper(String folderName, String[] currentSetFilepaths);
     }
 

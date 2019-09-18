@@ -20,7 +20,7 @@ public class PhotoManager {
     }
 
     public void takeSinglePhoto(){
-        mvpView.takeSinglePhoto(CAMERA_REQUEST);
+        mvpView.takeAndSaveSinglePhoto(CAMERA_REQUEST);
     }
 
     public void addBitmap(Bitmap bitmap){

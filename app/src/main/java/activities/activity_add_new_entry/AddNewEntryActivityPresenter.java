@@ -37,8 +37,13 @@ public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAd
     }
 
     @Override
-    public String getLatestPhotosTableName() {
-        return dbHelper.getLatestPhotosTableName();
+    public String getCurrentFilepathsTableName() {
+        return dbHelper.getCurrentFilepathsTableName();
+    }
+
+    @Override
+    public String getLatestFilepathsTableName() {
+        return dbHelper.getLatestFilepathsTableName();
     }
 
     public boolean passFilepathsToDBHelper(String folderName, String[] currentSetFilepaths) {

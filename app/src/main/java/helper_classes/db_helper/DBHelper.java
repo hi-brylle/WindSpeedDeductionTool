@@ -64,20 +64,20 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
-        final String column_id = "_id";
-        final String column_filepaths = "filepaths";
+        final String COLUMN_ID = "_id";
+        final String COLUMN_FILEPATHS = "filepaths";
 
         String SQL_CREATE_FILEPATHS_TABLE = "create table " +
-                getCurrentPhotosTableName() + " (" +
-                column_id + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                column_filepaths + " TEXT" +
+                targetFolder + " (" +
+                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                COLUMN_FILEPATHS + " TEXT" +
                 ")";
 
         db.execSQL(SQL_CREATE_FILEPATHS_TABLE);
 
         long[] results = new long[filepaths.length];
         for(int i = 0; i < filepaths.length; i++){
-            cv.put(column_filepaths, filepaths[i]);
+            cv.put(COLUMN_FILEPATHS, filepaths[i]);
             results[i] = db.insert(targetFolder, null, cv);
         }
 
@@ -105,7 +105,7 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
         if(isEntriesTableEmpty()){
             cv.put(COLUMN_FILEPATHS_TABLE_NAME, "photos_for_id_1");
         } else{
-            cv.put(COLUMN_FILEPATHS_TABLE_NAME, "photos_for_id_" + getCurrentRowID());
+            cv.put(COLUMN_FILEPATHS_TABLE_NAME, "photos_for_id_" + currentRowID());
         }
 
         return cv;
@@ -117,7 +117,7 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
         return count <= 0;
     }
 
-    private int getCurrentRowID(){
+    private int currentRowID(){
         if(isEntriesTableEmpty()){
             //haxxx, shhhhh
             return 1;
@@ -138,11 +138,18 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
         }
     }
 
-    private String getCurrentPhotosTableName(){
+    private String currentFilepathsTableName(){
+
         if(isEntriesTableEmpty()){
+            //haxxx again, shhhhh
             return "photos_for_id_1";
         } else{
-            /*SQLiteDatabase db = this.getWritableDatabase();
+            return "photos_for_id_" + currentRowID();
+        }
+    }
+
+    private String latestFilepathsTableName(){
+        SQLiteDatabase db = this.getWritableDatabase();
             String SQL_GET_TABLE_NAMES = "SELECT " + COLUMN_FILEPATHS_TABLE_NAME + " FROM " + TABLE_NAME_INPUTS;
             Cursor c = db.rawQuery(SQL_GET_TABLE_NAMES, null);
 
@@ -153,9 +160,7 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
 
             c.close();
 
-            return columnName;*/
-            return "photos_for_id_" + getCurrentRowID();
-        }
+            return columnName;
     }
 
     @Override
@@ -168,8 +173,13 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
     }
 
     @Override
-    public String getLatestPhotosTableName() {
-        return getCurrentPhotosTableName();
+    public String getLatestFilepathsTableName() {
+        return latestFilepathsTableName();
+    }
+
+    @Override
+    public String getCurrentFilepathsTableName() {
+        return currentFilepathsTableName();
     }
 
     @Override
