@@ -19,10 +19,10 @@ public class GalleryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
 
-        imageView = findViewById(R.id.image_view_PutImageHereNigga);
+        /*imageView = findViewById(R.id.image_view_PutImageHereNigga);
 
         Intent bitmapIntent = getIntent();
         Bitmap bitmap = bitmapIntent.getParcelableExtra("bitmap");
-        imageView.setImageBitmap(bitmap);
+        imageView.setImageBitmap(bitmap);*/
     }
 }

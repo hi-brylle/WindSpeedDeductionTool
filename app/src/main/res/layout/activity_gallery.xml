@@ -5,9 +5,15 @@
     android:layout_height="match_parent"
     tools:context="activities.activity_gallery.GalleryActivity">
 
-    <ImageView
-        android:id="@+id/image_view_PutImageHereNigga"
+    <GridView
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:clickable="true"
+        android:columnWidth="75dp"
+        android:focusable="false"
+        android:gravity="center"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="15dp" />
 
 </RelativeLayout>

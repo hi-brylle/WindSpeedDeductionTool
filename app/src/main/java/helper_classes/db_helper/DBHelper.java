@@ -139,18 +139,23 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
     }
 
     private String getCurrentPhotosTableName(){
-        SQLiteDatabase db = this.getWritableDatabase();
-        String SQL_GET_TABLE_NAMES = "SELECT " + COLUMN_FILEPATHS_TABLE_NAME + " FROM " + TABLE_NAME_INPUTS;
-        Cursor c = db.rawQuery(SQL_GET_TABLE_NAMES, null);
+        if(isEntriesTableEmpty()){
+            return "photos_for_id_1";
+        } else{
+            /*SQLiteDatabase db = this.getWritableDatabase();
+            String SQL_GET_TABLE_NAMES = "SELECT " + COLUMN_FILEPATHS_TABLE_NAME + " FROM " + TABLE_NAME_INPUTS;
+            Cursor c = db.rawQuery(SQL_GET_TABLE_NAMES, null);
 
-        String columnName;
-        assert c != null;
-        c.moveToLast();
-        columnName = c.getString(c.getColumnIndex(COLUMN_FILEPATHS_TABLE_NAME));
+            String columnName;
+            assert c != null;
+            c.moveToLast();
+            columnName = c.getString(c.getColumnIndex(COLUMN_FILEPATHS_TABLE_NAME));
 
-        c.close();
+            c.close();
 
-        return columnName;
+            return columnName;*/
+            return "photos_for_id_" + getCurrentRowID();
+        }
     }
 
     @Override

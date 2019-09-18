@@ -2,6 +2,7 @@ package activities.activity_add_new_entry;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -9,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -20,6 +22,8 @@ import android.widget.Toast;
 
 import com.example.windspeeddeductiontool.R;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 
 import activities.activity_gallery.GalleryActivity;
@@ -42,6 +46,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     private BroadcastReceiver locationBroadcastReceiver;
 
     PhotoManager photoManager;
+    PhotoFileIO photoFileIO;
     final HashMap<String, String> componentToDmgDescriptions = new HashMap<>();
 
     @Override
@@ -51,6 +56,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
         mPresenter = new AddNewEntryActivityPresenter(this, new DBHelper(this));
         photoManager = new PhotoManager(this);
+        photoFileIO = new PhotoFileIO(this);
     }
 
     @Override
@@ -65,12 +71,12 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         buttonAddNewEntry = findViewById(R.id.button_AddNewEntry);
         final ImageButton imageButtonAttachPhoto = findViewById(R.id.image_button_AttachPhoto);
 
-        photoManager.addNonNullPhotoBitmapListener(new IPhotoManagerBitmapListener() {
+        /*photoManager.addNonNullPhotoBitmapListener(new IPhotoManagerBitmapListener() {
             @Override
             public void onNonNullPhotoBitmap() {
                 setMiniGalleryButtonResource(photoManager.getBitmaps().get(photoManager.getBitmaps().size() - 1));
             }
-        });
+        });*/
 
         toggleAddNewButtonOnOff();
         //TODO: make the gps fix listener listen only on the first fix
@@ -174,12 +180,6 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     }
 
     @Override
-    public void takeSinglePhoto(int CAMERA_REQUEST) {
-        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(cameraIntent, CAMERA_REQUEST);
-    }
-
-    @Override
     public String getStringFromRes(int resID) {
         return getString(resID);
     }
@@ -195,12 +195,43 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     }
 
     @Override
+    public void takeSinglePhoto(int CAMERA_REQUEST) {
+        /*Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(cameraIntent, CAMERA_REQUEST);*/
+
+        File file = null;
+        try{
+            file = photoFileIO.createImageFile(mPresenter.getLatestPhotosTableName());
+            photoFileIO.addToCurrentPhotoFileset(FileProvider.getUriForFile(this, PhotoManager.CAMERA_IMAGE_FILE_PROVIDER, file));
+            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+            cameraIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoFileIO.getLatestUri());
+            startActivityForResult(cameraIntent, CAMERA_REQUEST);
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (resultCode == RESULT_OK && requestCode == photoManager.CAMERA_REQUEST) {
+        /*if (resultCode == RESULT_OK && requestCode == photoManager.CAMERA_REQUEST) {
             assert data != null;
             Bitmap bmp = (Bitmap) data.getExtras().get("data");
             photoManager.addBitmap(bmp);
+        }*/
+
+        if (resultCode == RESULT_OK && requestCode == PhotoManager.CAMERA_REQUEST){
+            if(photoFileIO.getLatestUri() != null){
+                final ImageButton imageButtonMiniGallery = findViewById(R.id.image_button_MiniGallery);
+                if (imageButtonMiniGallery.getVisibility() == View.GONE) {
+                    imageButtonMiniGallery.setVisibility(View.VISIBLE);
+                }
+                imageButtonMiniGallery.setImageURI(photoFileIO.getLatestUri());
+            }
         }
+
+
     }
 
     @Override
@@ -216,8 +247,6 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     private void addNewEntry(){
         deselectRadioGroups();
         toggleAddNewButtonOnOff();
-
-        PhotoFileIO photoFileIO = new PhotoFileIO(this);
 
         //1. insert descriptions to DB
         boolean dataInsertSuccess = mPresenter.passDataToDBHelper(componentToDmgDescriptions);
@@ -242,6 +271,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         }
 
         photoManager.dumpBitmaps();
+        photoFileIO.dumpVars();
 
 
         final ImageButton imageButtonMiniGallery = findViewById(R.id.image_button_MiniGallery);

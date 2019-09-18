@@ -8,6 +8,7 @@ import activities.activity_add_new_entry.IAddNewEntryActivityMVP;
 
 public class PhotoManager {
     public static final int CAMERA_REQUEST = 17;
+    public static final String CAMERA_IMAGE_FILE_PROVIDER = "com.example.windspeeddeductiontool.fileprovider";
     private ArrayList<Bitmap> photoBitmaps;
     private IAddNewEntryActivityMVP.IAddNewEntryActivityView mvpView;
 

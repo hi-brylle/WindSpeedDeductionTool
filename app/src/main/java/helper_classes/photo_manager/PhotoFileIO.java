@@ -1,12 +1,14 @@
 package helper_classes.photo_manager;
 
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Environment;
 
 import com.example.windspeeddeductiontool.R;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import activities.activity_add_new_entry.IAddNewEntryActivityMVP;
@@ -17,6 +19,9 @@ public class PhotoFileIO {
     private File appRootDirectory;
     private File currentPhotoSetDir;
     private ArrayList<File> currentPhotoSetFiles;
+    private ArrayList<Uri> currentPhotoSetUri;
+
+    private static int counter = 0;
 
     public PhotoFileIO(IAddNewEntryActivityMVP.IAddNewEntryActivityView mvpView) {
         this.mvpView = mvpView;
@@ -100,7 +105,7 @@ public class PhotoFileIO {
         if (currentPhotoSetFiles == null || currentPhotoSetFiles.size() == 0) {
             currentPhotoSetFiles = new ArrayList<>();
         }
-        currentPhotoSetFiles.add(photoFile/*.getAbsoluteFile()*/);
+        currentPhotoSetFiles.add(photoFile);
         int latestIndex = currentPhotoSetFiles.size() - 1;
         mvpView.logSomething("MY TAG", currentPhotoSetFiles.get(latestIndex).toString());
     }
@@ -115,6 +120,24 @@ public class PhotoFileIO {
         return currentSetFilepaths;
     }
 
+    public File createImageFile(String folderName) throws IOException{
+        initCurrentFolderDir(folderName);
+        String filename = folderName + "_" + (counter + 1) + ".jpg";
+        counter++;
+        return new File(currentPhotoSetDir, filename);
+    }
+
+    public void addToCurrentPhotoFileset(Uri uri){
+        if(currentPhotoSetUri == null || currentPhotoSetUri.size() == 0){
+            currentPhotoSetUri = new ArrayList<>();
+        }
+        currentPhotoSetUri.add(uri);
+    }
+
+    public Uri getLatestUri(){
+        return currentPhotoSetUri.get(currentPhotoSetUri.size() - 1);
+    }
+
     public void dumpVars() {
         if (currentPhotoSetDir != null) {
             currentPhotoSetDir = null;
@@ -123,5 +146,11 @@ public class PhotoFileIO {
             currentPhotoSetFiles.clear();
             currentPhotoSetFiles = null;
         }
+        if(currentPhotoSetUri != null){
+            currentPhotoSetUri.clear();
+            currentPhotoSetUri = null;
+        }
     }
+
+
 }
