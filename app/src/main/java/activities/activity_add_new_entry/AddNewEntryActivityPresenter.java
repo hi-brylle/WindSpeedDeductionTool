@@ -54,11 +54,11 @@ public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAd
         gpsFixListener = listener;
     }
 
-    public double getLongitude() {
+    double getLongitude() {
         return longitude;
     }
 
-    public double getLatitude() {
+    double getLatitude() {
         return latitude;
     }
 }
