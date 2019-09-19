@@ -6,6 +6,7 @@
     tools:context="activities.activity_gallery.GalleryActivity">
 
     <GridView
+        android:id="@+id/grid_view_gallery"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
@@ -14,6 +15,7 @@
         android:focusable="false"
         android:gravity="center"
         android:numColumns="auto_fit"
-        android:verticalSpacing="15dp" />
+        android:verticalSpacing="15dp" >
+    </GridView>
 
 </RelativeLayout>

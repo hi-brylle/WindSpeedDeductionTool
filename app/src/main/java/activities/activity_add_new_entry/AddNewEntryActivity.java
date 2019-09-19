@@ -8,7 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -70,7 +70,12 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         buttonAddNewEntry = findViewById(R.id.button_AddNewEntry);
         final ImageButton imageButtonAttachPhoto = findViewById(R.id.image_button_AttachPhoto);
 
-        //TODO: set listener here for non-null Uri (once a photo has been taken)
+        /*photoFileIO.addNonNullUriListener(new INonNullUriListener() {
+            @Override
+            public void onNonNullPhotoURI() {
+                setMiniGalleryButtonResource(photoFileIO.getLatestUri());
+            }
+        });*/
 
         toggleAddNewButtonOnOff();
         //TODO: make the gps fix listener listen only on the first fix
@@ -119,21 +124,14 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
     }
 
-    private void setMiniGalleryButtonResource(final Bitmap latestBitmap) {
+    private void setMiniGalleryButtonResource(final Uri photoUri) {
         final ImageButton imageButtonMiniGallery = findViewById(R.id.image_button_MiniGallery);
         if (imageButtonMiniGallery.getVisibility() == View.GONE) {
             imageButtonMiniGallery.setVisibility(View.VISIBLE);
         }
-        imageButtonMiniGallery.setImageBitmap(latestBitmap);
+        imageButtonMiniGallery.setImageURI(photoUri);
 
-        imageButtonMiniGallery.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent galleryIntent = new Intent(AddNewEntryActivity.this, GalleryActivity.class);
-                galleryIntent.putExtra("bitmap", latestBitmap);
-                startActivity(galleryIntent);
-            }
-        });
+        imageButtonMiniGallery.setOnClickListener(this);
     }
 
     private void deselectRadioGroups() {
@@ -188,6 +186,33 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
+    private void addNewEntry(){
+        deselectRadioGroups();
+        toggleAddNewButtonOnOff();
+
+        boolean dataInsertSuccess = mPresenter.passDataToDBHelper(componentToDmgDescriptions);
+        showToastOnDBInsert(dataInsertSuccess);
+
+        if(photoFileIO.doImagesExist()){
+            String folderName = mPresenter.getLatestFilepathsTableName();
+            logSomething("MY TAG", "Foldername: " + folderName);
+
+            String[] currentSetFilepaths = photoFileIO.getCurrentSetFilepaths();
+            boolean areFilepathsInserted = mPresenter.passFilepathsToDBHelper(folderName, currentSetFilepaths);
+            if(areFilepathsInserted){
+                Log.d("MY TAG", "Filepaths inserted");
+            } else{
+                Log.d("MY TAG", "Failed to insert filepaths");
+            }
+        }
+
+        photoFileIO.dumpURIs();
+
+        final ImageButton imageButtonMiniGallery = findViewById(R.id.image_button_MiniGallery);
+        imageButtonMiniGallery.setVisibility(View.GONE);
+        imageButtonMiniGallery.setImageBitmap(null);
+    }
+
     @Override
     public void takeAndSaveSinglePhoto(int CAMERA_REQUEST) {
         File file = null;
@@ -216,9 +241,18 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                 }
 
                 Log.d("path", photoFileIO.getLatestUri().getPath().replace("//", "/"));
-                imageButtonMiniGallery.setImageURI(photoFileIO.getLatestUri());
+
+                setMiniGalleryButtonResource(photoFileIO.getLatestUri());
             }
         }
+    }
+
+    private void goToGalleryActivity(){
+        Intent galleryIntent = new Intent(AddNewEntryActivity.this, GalleryActivity.class);
+        Bundle uriBundle = new Bundle();
+        uriBundle.putParcelableArrayList("uriArrayList", photoFileIO.getPhotoSetURIs());
+        galleryIntent.putExtra("bundle", uriBundle);
+        startActivity(galleryIntent);
     }
 
     @Override
@@ -228,35 +262,13 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         } else
         if(view.getId() == R.id.image_button_AttachPhoto){
             cameraRequest.takeSinglePhoto();
+        } else
+        if(view.getId() == R.id.image_button_MiniGallery){
+            goToGalleryActivity();
         }
     }
 
-    private void addNewEntry(){
-        deselectRadioGroups();
-        toggleAddNewButtonOnOff();
 
-        boolean dataInsertSuccess = mPresenter.passDataToDBHelper(componentToDmgDescriptions);
-        showToastOnDBInsert(dataInsertSuccess);
-
-        if(photoFileIO.doImagesExist()){
-            String folderName = mPresenter.getLatestFilepathsTableName();
-            logSomething("MY TAG", "Foldername: " + folderName);
-
-            String[] currentSetFilepaths = photoFileIO.getCurrentSetFilepaths();
-            boolean areFilepathsInserted = mPresenter.passFilepathsToDBHelper(folderName, currentSetFilepaths);
-            if(areFilepathsInserted){
-                Log.d("MY TAG", "Filepaths inserted");
-            } else{
-                Log.d("MY TAG", "Failed to insert filepaths");
-            }
-        }
-
-        photoFileIO.dumpURIs();
-
-        final ImageButton imageButtonMiniGallery = findViewById(R.id.image_button_MiniGallery);
-        imageButtonMiniGallery.setVisibility(View.GONE);
-        imageButtonMiniGallery.setImageBitmap(null);
-    }
 
     @Override
     protected void onResume() {

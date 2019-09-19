@@ -16,7 +16,9 @@ public class PhotoFileIO {
 
     private File appRootDirectory;
     private File currentPhotoSetDir;
-    private ArrayList<Uri> currentPhotoSetUri;
+    private ArrayList<Uri> currentPhotoSetURIs;
+
+    private INonNullUriListener nonNullUriListener;
 
     private int setCounter = 0;
 
@@ -73,10 +75,10 @@ public class PhotoFileIO {
     }
 
     public String[] getCurrentSetFilepaths() {
-        String[] currentSetFilepaths = new String[currentPhotoSetUri.size()];
+        String[] currentSetFilepaths = new String[currentPhotoSetURIs.size()];
 
         for (int i = 0; i < currentSetFilepaths.length; i++) {
-            currentSetFilepaths[i] = currentPhotoSetUri.get(i).getPath().replace("//", "/");
+            currentSetFilepaths[i] = currentPhotoSetURIs.get(i).getPath().replace("//", "/");
         }
 
         return currentSetFilepaths;
@@ -90,18 +92,22 @@ public class PhotoFileIO {
     }
 
     public void addToCurrentPhotoFileset(Uri uri) {
-        if (currentPhotoSetUri == null || currentPhotoSetUri.size() == 0) {
-            currentPhotoSetUri = new ArrayList<>();
+        if (currentPhotoSetURIs == null || currentPhotoSetURIs.size() == 0) {
+            currentPhotoSetURIs = new ArrayList<>();
         }
-        currentPhotoSetUri.add(uri);
+        currentPhotoSetURIs.add(uri);
+    }
+
+    public ArrayList<Uri> getPhotoSetURIs(){
+        return currentPhotoSetURIs;
     }
 
     public Uri getLatestUri() {
-        return currentPhotoSetUri.get(currentPhotoSetUri.size() - 1);
+        return currentPhotoSetURIs.get(currentPhotoSetURIs.size() - 1);
     }
 
     public boolean doImagesExist() {
-        return currentPhotoSetUri != null && currentPhotoSetUri.size() > 0;
+        return currentPhotoSetURIs != null && currentPhotoSetURIs.size() > 0;
     }
 
     public void dumpURIs() {
@@ -109,13 +115,16 @@ public class PhotoFileIO {
             currentPhotoSetDir = null;
         }
 
-        if (currentPhotoSetUri != null) {
-            currentPhotoSetUri.clear();
-            currentPhotoSetUri = null;
+        if (currentPhotoSetURIs != null) {
+            currentPhotoSetURIs.clear();
+            currentPhotoSetURIs = null;
         }
 
         setCounter = 0;
     }
 
+    public void addNonNullUriListener(INonNullUriListener listener){
+        nonNullUriListener = listener;
+    }
 
 }

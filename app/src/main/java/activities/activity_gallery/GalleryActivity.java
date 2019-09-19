@@ -3,26 +3,41 @@ package activities.activity_gallery;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
-import android.widget.ImageButton;
-import android.widget.ImageView;
+import android.util.Log;
+import android.widget.GridView;
 
 import com.example.windspeeddeductiontool.R;
 
+import java.util.ArrayList;
+
 public class GalleryActivity extends AppCompatActivity {
 
-    ImageView imageView;
+    ArrayList<Uri> photoSetURIs;
+    GridView gridViewGallery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
 
-        /*imageView = findViewById(R.id.image_view_PutImageHereNigga);
+        Intent intent = getIntent();
+        Bundle uriBundle = intent.getBundleExtra("bundle");
+        if (uriBundle != null) {
+            photoSetURIs = uriBundle.getParcelableArrayList("uriArrayList");
+        }
 
-        Intent bitmapIntent = getIntent();
-        Bitmap bitmap = bitmapIntent.getParcelableExtra("bitmap");
-        imageView.setImageBitmap(bitmap);*/
+        Uri[] uriArray = new Uri[photoSetURIs.size()];
+        for(int i = 0; i < photoSetURIs.size(); i++){
+            uriArray[i] = photoSetURIs.get(i);
+            Log.d("MY TAG", "onCreate: " + uriArray[i]);
+        }
+
+        gridViewGallery = findViewById(R.id.grid_view_gallery);
+        UriAdapter uriAdapter = new UriAdapter(this, uriArray);
+        gridViewGallery.setAdapter(uriAdapter);
+
+        //do your shit here
     }
 }
