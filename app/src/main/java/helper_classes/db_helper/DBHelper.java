@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
@@ -22,6 +23,7 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
     private static final String COLUMN_WINDOWS_DAMAGE = "windows_damage";
     private static final String COLUMN_WALLS_DAMAGE = "wall_damage";
     private static final String COLUMN_FILEPATHS_TABLE_NAME = "filepaths_table_name";
+    private static final String COLUMN_FILEPATHS = "filepaths";
 
     public DBHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -63,9 +65,6 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
     private boolean insert(String targetFolder, String[] filepaths){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
-
-        final String COLUMN_ID = "_id";
-        final String COLUMN_FILEPATHS = "filepaths";
 
         String SQL_CREATE_FILEPATHS_TABLE = "create table " +
                 targetFolder + " (" +
@@ -163,6 +162,32 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
             return columnName;
     }
 
+    private String[] getFilepaths(int id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String SQL_GET_FILEPATHS_TABLE_NAME = "select " + COLUMN_FILEPATHS_TABLE_NAME + " from " + TABLE_NAME_INPUTS + " where " + COLUMN_ID + " = ?";
+        Cursor c = db.rawQuery(SQL_GET_FILEPATHS_TABLE_NAME, new String[]{String.valueOf(id)});
+        if (c != null) {
+            c.moveToFirst();
+        }
+        String filepathsTable = c.getString(c.getColumnIndex(COLUMN_FILEPATHS_TABLE_NAME));
+        c.close();
+
+        String SQL_GET_FILEPATHS = "select " + COLUMN_FILEPATHS + " from " + filepathsTable;
+        Cursor filepathsCursor = db.rawQuery(SQL_GET_FILEPATHS, null);
+        if(filepathsCursor != null){
+            filepathsCursor.moveToFirst();
+        }
+
+        ArrayList<String> filepaths = new ArrayList<>();
+        for(; !filepathsCursor.isAfterLast(); filepathsCursor.moveToNext()){
+            String fp = filepathsCursor.getString(filepathsCursor.getColumnIndex(COLUMN_FILEPATHS));
+            filepaths.add(fp);
+        }
+        filepathsCursor.close();
+
+        return filepaths.toArray(new String[0]);
+    }
+
     @Override
     public boolean insertToDB(double longitude, double latitude, HashMap<String, String> componentToDmgDescriptions) {
         String roofDmg = componentToDmgDescriptions.get("roofDmg");
@@ -185,5 +210,10 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
     @Override
     public boolean insertFilepaths(String folderName, String[] currentSetFilepaths) {
         return insert(folderName, currentSetFilepaths);
+    }
+
+    @Override
+    public String[] getFilepathsForID(int id) {
+        return getFilepaths(id);
     }
 }

@@ -7,4 +7,5 @@ public interface IDBHelper {
     String getLatestFilepathsTableName();
     String getCurrentFilepathsTableName();
     boolean insertFilepaths(String folderName, String[] currentSetFilepaths);
+    String[] getFilepathsForID(int id);
 }
