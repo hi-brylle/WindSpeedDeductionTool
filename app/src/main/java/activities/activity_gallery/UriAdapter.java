@@ -10,12 +10,14 @@ import android.widget.ImageView;
 
 import com.example.windspeeddeductiontool.R;
 
+import java.util.ArrayList;
+
 public class UriAdapter extends BaseAdapter implements IGalleryActivityMVP.IGalleryActivityAdapterView{
     private LayoutInflater inflater;
-    private Uri[] photoURIs;
+    private ArrayList<Uri> photoURIs;
     private Drawable highlight;
 
-    UriAdapter(LayoutInflater inflater, Uri[] uris, Drawable highlight){
+    UriAdapter(LayoutInflater inflater, ArrayList<Uri> uris, Drawable highlight){
         this.inflater = inflater;
         photoURIs = uris;
         this.highlight = highlight;
@@ -23,7 +25,7 @@ public class UriAdapter extends BaseAdapter implements IGalleryActivityMVP.IGall
 
     @Override
     public int getCount() {
-        return photoURIs.length;
+        return photoURIs.size();
     }
 
     @Override
@@ -40,7 +42,7 @@ public class UriAdapter extends BaseAdapter implements IGalleryActivityMVP.IGall
     public View getView(int i, View view, ViewGroup viewGroup) {
         View itemView = inflater.inflate(R.layout.cell_gallery_photo, viewGroup, false);
         final ImageView imageViewPhoto = itemView.findViewById(R.id.image_view_cell_item);
-        imageViewPhoto.setImageURI(photoURIs[i]);
+        imageViewPhoto.setImageURI(photoURIs.get(i));
         imageViewPhoto.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {

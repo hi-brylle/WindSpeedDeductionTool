@@ -9,7 +9,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#25976f">
+        android:background="@color/green_that_sucks">
 
         <ImageButton
             android:id="@+id/image_button_CancelSelection"

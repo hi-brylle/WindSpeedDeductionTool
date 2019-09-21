@@ -19,7 +19,6 @@ public class GalleryActivity extends AppCompatActivity implements IGalleryActivi
 
     private GalleryActivityPresenter mPresenter;
 
-    ArrayList<Uri> photoSetURIs;
     GridView gridViewGallery;
     ImageButton imageButtonDeleteSelected;
     ImageButton imageButtonCancelSelection;
@@ -30,25 +29,16 @@ public class GalleryActivity extends AppCompatActivity implements IGalleryActivi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
 
+        mPresenter = new GalleryActivityPresenter(this);
+
         Intent intent = getIntent();
         Bundle uriBundle = intent.getBundleExtra("bundle");
+        ArrayList<Uri> photoSetURIs = new ArrayList<>();
         if (uriBundle != null) {
             photoSetURIs = uriBundle.getParcelableArrayList("uriArrayList");
         }
 
-        Uri[] uriArray = new Uri[photoSetURIs.size()];
-        for(int i = 0; i < photoSetURIs.size(); i++){
-            uriArray[i] = photoSetURIs.get(i);
-            Log.d("MY TAG", "onCreate: " + uriArray[i]);
-        }
-
-        gridViewGallery = findViewById(R.id.grid_view_gallery);
-        UriAdapter uriAdapter = new UriAdapter((LayoutInflater)this.getSystemService(LAYOUT_INFLATER_SERVICE),
-                                                uriArray,
-                                                getResources().getDrawable(R.drawable.highlight));
-        gridViewGallery.setAdapter(uriAdapter);
-
-        //do your shit here
+        mPresenter.initGalleryImages(photoSetURIs);
     }
 
     @Override
@@ -58,5 +48,37 @@ public class GalleryActivity extends AppCompatActivity implements IGalleryActivi
         imageButtonDeleteSelected = findViewById(R.id.image_button_DeleteSelected);
         imageButtonCancelSelection = findViewById(R.id.image_button_CancelSelection);
         textViewSelectionCount = findViewById(R.id.text_view_SelectionCount);
+        gridViewGallery = findViewById(R.id.grid_view_gallery);
+
+        UriAdapter uriAdapter = new UriAdapter((LayoutInflater)this.getSystemService(LAYOUT_INFLATER_SERVICE),
+                mPresenter.getPhotoURIs(),
+                getResources().getDrawable(R.drawable.highlight));
+        gridViewGallery.setAdapter(uriAdapter);
+
+        //do your shit here
+
+
     }
+
+    @Override
+    public void disableDelete() {
+
+    }
+
+    @Override
+    public void hideCancel() {
+
+    }
+
+    @Override
+    public void showCancel() {
+
+    }
+
+    @Override
+    public void updateSelectCount() {
+
+    }
+
+
 }
