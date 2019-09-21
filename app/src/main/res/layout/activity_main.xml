@@ -1,27 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:orientation="vertical"
     tools:context="activities.activity_main.MainActivity">
 
-    <include layout="@layout/header_long_lat"
-        android:id="@+id/header_long_lat"/>
-
-    <Button
-        android:id="@+id/button_New"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/header_long_lat"
-        android:layout_margin="10dp"
-        android:text="New"
-        android:textAllCaps="false" />
-
-    <ListView
-        android:id="@+id/list_view_Entries"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/button_New"
-        android:layout_margin="10dp" />
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:orientation="horizontal">
 
-</RelativeLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="header1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="header2" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="header3" />
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/list_view_entries"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:layout_weight="0.1" />
+
+    <ImageButton
+        android:id="@+id/image_button_new"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:adjustViewBounds="true"
+        android:background="@mipmap/baseline_add_circle_black_48"
+        android:scaleType="fitCenter" />
+
+</LinearLayout>

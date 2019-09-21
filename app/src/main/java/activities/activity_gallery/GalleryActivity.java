@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.widget.GridView;
 
 import com.example.windspeeddeductiontool.R;
@@ -35,7 +36,7 @@ public class GalleryActivity extends AppCompatActivity {
         }
 
         gridViewGallery = findViewById(R.id.grid_view_gallery);
-        UriAdapter uriAdapter = new UriAdapter(this, uriArray);
+        UriAdapter uriAdapter = new UriAdapter((LayoutInflater)this.getSystemService(LAYOUT_INFLATER_SERVICE), uriArray);
         gridViewGallery.setAdapter(uriAdapter);
 
         //do your shit here

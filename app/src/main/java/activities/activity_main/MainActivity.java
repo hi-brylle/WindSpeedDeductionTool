@@ -6,15 +6,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.windspeeddeductiontool.R;
@@ -39,11 +35,6 @@ public class MainActivity extends AppCompatActivity implements IMainActivityMVP.
 
     private MainActivityPresenter mPresenter;
 
-    private TextView textViewLongitude;
-    private TextView textViewLatitude;
-
-    private BroadcastReceiver broadcastReceiver;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,11 +49,9 @@ public class MainActivity extends AppCompatActivity implements IMainActivityMVP.
     protected void onStart() {
         super.onStart();
 
-        Button buttonNew = findViewById(R.id.button_New);
-        textViewLongitude = findViewById(R.id.text_view_CurrentLongitude);
-        textViewLatitude = findViewById(R.id.text_view_CurrentLatitude);
+        ImageButton imageButtonNew = findViewById(R.id.image_button_new);
 
-        buttonNew.setOnClickListener(new View.OnClickListener() {
+        imageButtonNew.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mPresenter.handleNewButtonClick();
@@ -73,28 +62,11 @@ public class MainActivity extends AppCompatActivity implements IMainActivityMVP.
     @Override
     protected void onResume() {
         super.onResume();
-        if(broadcastReceiver == null){
-            broadcastReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    double longitude = (double) intent.getExtras().get("longitude");
-                    double latitude = (double) intent.getExtras().get("latitude");
-                    String setLongitude = getString(R.string.header_longitude) + longitude;
-                    String setLatitude = getString(R.string.header_latitude) + latitude;
-                    textViewLongitude.setText(setLongitude);
-                    textViewLatitude.setText(setLatitude);
-                }
-            };
-        }
-        registerReceiver(broadcastReceiver, new IntentFilter("location_updates"));
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(broadcastReceiver != null){
-            unregisterReceiver(broadcastReceiver);
-        }
     }
 
     @Override
