@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 
 import com.example.windspeeddeductiontool.R;
 
@@ -45,8 +44,11 @@ public class UriAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int i, View view, ViewGroup viewGroup) {
-        View itemView = inflater.inflate(R.layout.cell_gallery_photo, viewGroup, false);
-        final ImageView imageViewPhoto = itemView.findViewById(R.id.image_view_cell_item);
+        if(view == null){
+            view = inflater.inflate(R.layout.cell_gallery_photo, viewGroup, false);
+        }
+
+        final GalleryItemView imageViewPhoto = view.findViewById(R.id.image_view_cell_item);
         imageViewPhoto.setImageURI(photoURIs.get(i));
 
         imageViewPhoto.setOnClickListener(new View.OnClickListener() {
@@ -55,7 +57,7 @@ public class UriAdapter extends BaseAdapter {
                 if(mPresenter.noPhotosSelected()){
                     Log.d("MY TAG","ZOOM IN NOW, NEW ACTIVITY");
                 } else{
-                    mPresenter.toggleSelection(i);
+                    mPresenter.toggleSelectionAt(i);
                     if(mPresenter.isCurrentImageSelected(i)){
                         imageViewPhoto.setBackground(highlight);
                     } else{
@@ -69,7 +71,7 @@ public class UriAdapter extends BaseAdapter {
             @Override
             public boolean onLongClick(View view) {
                 if(mPresenter.noPhotosSelected()){
-                    mPresenter.toggleSelection(i);
+                    mPresenter.toggleSelectionAt(i);
 
                     if(mPresenter.isCurrentImageSelected(i)){
                         imageViewPhoto.setBackground(highlight);
@@ -83,7 +85,7 @@ public class UriAdapter extends BaseAdapter {
             }
         });
 
-        return itemView;
+        return view;
     }
 
 

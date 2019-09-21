@@ -77,7 +77,7 @@ class GalleryActivityPresenter implements IGalleryActivityMVP.IGalleryActivityPr
     }
 
     @Override
-    public void toggleSelection(int index) {
+    public void toggleSelectionAt(int index) {
         galleryImages.get(index).toggleSelection();
     }
 

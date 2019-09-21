@@ -5,10 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.GridView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 public class GalleryActivity extends AppCompatActivity implements IGalleryActivityMVP.IGalleryActivityView, View.OnClickListener {
 
     private GalleryActivityPresenter mPresenter;
+    UriAdapter uriAdapter;
 
     GridView gridViewGallery;
     ImageButton imageButtonDeleteSelected;
@@ -52,7 +55,7 @@ public class GalleryActivity extends AppCompatActivity implements IGalleryActivi
         textViewSelectionCount = findViewById(R.id.text_view_SelectionCount);
         gridViewGallery = findViewById(R.id.grid_view_gallery);
 
-        UriAdapter uriAdapter = new UriAdapter((LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE),
+        uriAdapter = new UriAdapter((LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE),
                 getResources().getDrawable(R.drawable.highlight),
                 mPresenter.getPhotoURIs(),
                 mPresenter);
@@ -111,10 +114,19 @@ public class GalleryActivity extends AppCompatActivity implements IGalleryActivi
             Toast.makeText(this, "DELETING SOMETHING", Toast.LENGTH_SHORT).show();
         } else
         if(view.getId() == R.id.image_button_CancelSelection){
-            Toast.makeText(this, "CANCELING SELECTION", Toast.LENGTH_SHORT).show();
+            cancelSelections();
         }
     }
 
+    void cancelSelections(){
+        for(int i = 0; i < gridViewGallery.getChildCount(); i++){
+            GalleryItemView galleryItemView = (GalleryItemView) gridViewGallery.getChildAt(i);
+            if(galleryItemView.getBackground() != null){
+                mPresenter.toggleSelectionAt(i);
+                galleryItemView.setBackground(null);
+            }
+        }
+    }
 
 
 
