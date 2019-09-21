@@ -6,18 +6,19 @@ import java.util.ArrayList;
 
 public interface IGalleryActivityMVP {
     interface IGalleryActivityView{
+        void enableDelete();
         void disableDelete();
-        void hideCancel();
         void showCancel();
-        void updateSelectCount();
-    }
-
-    interface IGalleryActivityAdapterView{
-
+        void hideCancel();
+        void showAndUpdateSelectCount(int selectCount);
+        void hideSelectCount();
     }
 
     interface IGalleryActivityPresenter{
         void initGalleryImages(ArrayList<Uri> photoSetURIs);
         ArrayList<Uri> getPhotoURIs();
+        void setupSelectListeners();
+        void toggleSelection(int index);
+        boolean isCurrentImageSelected(int i);
     }
 }

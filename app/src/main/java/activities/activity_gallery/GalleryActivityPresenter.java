@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import activities.activity_gallery.gallery_image.GalleryImage;
 import activities.activity_gallery.gallery_image.GalleryImagesState;
+import activities.activity_gallery.gallery_image.IGalleryImage;
 
 class GalleryActivityPresenter implements IGalleryActivityMVP.IGalleryActivityPresenter {
     private IGalleryActivityMVP.IGalleryActivityView mvpView;
@@ -37,7 +38,53 @@ class GalleryActivityPresenter implements IGalleryActivityMVP.IGalleryActivityPr
         return photoURIs;
     }
 
+    @Override
+    public void setupSelectListeners() {
+        for(int i = 0; i < galleryImages.size(); i++){
+            galleryImages.get(i).addImageSelectListeners(new IGalleryImage.IImageSelectListeners() {
+                @Override
+                public void onImageNotSelected() {
+                    galleryImagesState.decrementSelections();
+                }
 
+                @Override
+                public void onImageSelected() {
+                    galleryImagesState.incrementSelections();
+                }
+            });
+        }
+
+        galleryImagesState.addSelectCountListener(new IGalleryImage.ISelectCountListeners() {
+            @Override
+            public void onNoneSelected() {
+                mvpView.hideCancel();
+                mvpView.disableDelete();
+                mvpView.hideSelectCount();
+            }
+
+            @Override
+            public void onAtLeastOneSelected() {
+                mvpView.showCancel();
+                mvpView.enableDelete();
+                mvpView.showAndUpdateSelectCount(galleryImagesState.returnNumSelected());
+            }
+
+            @Override
+            public void onDecrement() {
+                mvpView.showAndUpdateSelectCount(galleryImagesState.returnNumSelected());
+            }
+        });
+    }
+
+    @Override
+    public void toggleSelection(int index) {
+        galleryImages.get(index).toggleSelection();
+    }
+
+    @Override
+    public boolean isCurrentImageSelected(int i) {
+        return galleryImages.get(i).getSelectStatus();
+    }
 
 
 }

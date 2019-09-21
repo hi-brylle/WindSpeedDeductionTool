@@ -4,8 +4,8 @@ import android.net.Uri;
 
 public class GalleryImage implements IGalleryImage{
     private Uri photoUri;
-    boolean isSelected;
-    private IImageSelectListener imageSelectListener;
+    private boolean isSelected;
+    private IImageSelectListeners imageSelectListener;
 
     public GalleryImage(Uri photoUri){
         this.photoUri = photoUri;
@@ -16,13 +16,22 @@ public class GalleryImage implements IGalleryImage{
         return photoUri;
     }
 
-    void setAsSelected(){
-        isSelected = true;
+    public void toggleSelection(){
+        isSelected = !isSelected;
 
-        imageSelectListener.onImageSelected();
+        if(isSelected) {
+            imageSelectListener.onImageSelected();
+        } else{
+            imageSelectListener.onImageNotSelected();
+        }
+
     }
 
-    void addImageSelectListener(IImageSelectListener listener){
+    public boolean getSelectStatus(){
+        return isSelected;
+    }
+
+    public void addImageSelectListeners(IImageSelectListeners listener){
         imageSelectListener = listener;
     }
 }

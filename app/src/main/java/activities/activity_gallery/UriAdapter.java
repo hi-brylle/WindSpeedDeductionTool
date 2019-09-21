@@ -12,15 +12,19 @@ import com.example.windspeeddeductiontool.R;
 
 import java.util.ArrayList;
 
-public class UriAdapter extends BaseAdapter implements IGalleryActivityMVP.IGalleryActivityAdapterView{
+public class UriAdapter extends BaseAdapter {
     private LayoutInflater inflater;
     private ArrayList<Uri> photoURIs;
     private Drawable highlight;
 
-    UriAdapter(LayoutInflater inflater, ArrayList<Uri> uris, Drawable highlight){
+    private GalleryActivityPresenter mPresenter;
+
+    UriAdapter(LayoutInflater inflater, Drawable highlight,
+               ArrayList<Uri> uris, GalleryActivityPresenter presenter){
         this.inflater = inflater;
-        photoURIs = uris;
         this.highlight = highlight;
+        photoURIs = uris;
+        mPresenter = presenter;
     }
 
     @Override
@@ -39,16 +43,21 @@ public class UriAdapter extends BaseAdapter implements IGalleryActivityMVP.IGall
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
+    public View getView(final int i, View view, ViewGroup viewGroup) {
         View itemView = inflater.inflate(R.layout.cell_gallery_photo, viewGroup, false);
         final ImageView imageViewPhoto = itemView.findViewById(R.id.image_view_cell_item);
         imageViewPhoto.setImageURI(photoURIs.get(i));
-        imageViewPhoto.setOnLongClickListener(new View.OnLongClickListener() {
+
+        //TODO: set click listeners
+        imageViewPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onLongClick(View view) {
-                //TODO: do callback here indicating it got selected
-                imageViewPhoto.setBackground(highlight);
-                return true;
+            public void onClick(View view) {
+                mPresenter.toggleSelection(i);
+                if(mPresenter.isCurrentImageSelected(i)){
+                    imageViewPhoto.setBackground(highlight);
+                } else{
+                    imageViewPhoto.setBackground(null);
+                }
             }
         });
 

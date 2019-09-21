@@ -5,17 +5,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.windspeeddeductiontool.R;
 
 import java.util.ArrayList;
 
-public class GalleryActivity extends AppCompatActivity implements IGalleryActivityMVP.IGalleryActivityView {
+public class GalleryActivity extends AppCompatActivity implements IGalleryActivityMVP.IGalleryActivityView, View.OnClickListener {
 
     private GalleryActivityPresenter mPresenter;
 
@@ -39,6 +40,7 @@ public class GalleryActivity extends AppCompatActivity implements IGalleryActivi
         }
 
         mPresenter.initGalleryImages(photoSetURIs);
+        mPresenter.setupSelectListeners();
     }
 
     @Override
@@ -50,35 +52,70 @@ public class GalleryActivity extends AppCompatActivity implements IGalleryActivi
         textViewSelectionCount = findViewById(R.id.text_view_SelectionCount);
         gridViewGallery = findViewById(R.id.grid_view_gallery);
 
-        UriAdapter uriAdapter = new UriAdapter((LayoutInflater)this.getSystemService(LAYOUT_INFLATER_SERVICE),
+        UriAdapter uriAdapter = new UriAdapter((LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE),
+                getResources().getDrawable(R.drawable.highlight),
                 mPresenter.getPhotoURIs(),
-                getResources().getDrawable(R.drawable.highlight));
+                mPresenter);
         gridViewGallery.setAdapter(uriAdapter);
 
         //do your shit here
 
+        disableDelete();
+        hideCancel();
+        hideSelectCount();
 
+        imageButtonDeleteSelected.setOnClickListener(this);
+        imageButtonCancelSelection.setOnClickListener(this);
+
+    }
+
+    @Override
+    public void enableDelete() {
+        imageButtonDeleteSelected.setEnabled(true);
+        imageButtonDeleteSelected.setAlpha(1.0f);
     }
 
     @Override
     public void disableDelete() {
-
-    }
-
-    @Override
-    public void hideCancel() {
-
+        imageButtonDeleteSelected.setEnabled(false);
+        imageButtonDeleteSelected.setAlpha(0.5f);
     }
 
     @Override
     public void showCancel() {
-
+        imageButtonCancelSelection.setEnabled(true);
+        imageButtonCancelSelection.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void updateSelectCount() {
-
+    public void hideCancel() {
+        imageButtonCancelSelection.setEnabled(false);
+        imageButtonCancelSelection.setVisibility(View.GONE);
     }
+
+    @Override
+    public void showAndUpdateSelectCount(int selectCount) {
+        textViewSelectionCount.setVisibility(View.VISIBLE);
+        textViewSelectionCount.setText(Integer.toString(selectCount));
+    }
+
+    @Override
+    public void hideSelectCount() {
+        textViewSelectionCount.setVisibility(View.GONE);
+    }
+
+
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.image_button_DeleteSelected) {
+            Toast.makeText(this, "DELETING SOMETHING", Toast.LENGTH_SHORT).show();
+        } else
+        if(view.getId() == R.id.image_button_CancelSelection){
+            Toast.makeText(this, "CANCELING SELECTION", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
 
 
 }
