@@ -31,6 +31,12 @@ public class GalleryImage implements IGalleryImage{
         return isSelected;
     }
 
+    public void forceDeselect(){
+        isSelected = false;
+
+        imageSelectListener.onImageNotSelected();
+    }
+
     public void addImageSelectListeners(IImageSelectListeners listener){
         imageSelectListener = listener;
     }

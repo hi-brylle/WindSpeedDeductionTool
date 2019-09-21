@@ -5,14 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.GridView;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.windspeeddeductiontool.R;
 
@@ -35,14 +32,7 @@ public class GalleryActivity extends AppCompatActivity implements IGalleryActivi
 
         mPresenter = new GalleryActivityPresenter(this);
 
-        Intent intent = getIntent();
-        Bundle uriBundle = intent.getBundleExtra("bundle");
-        ArrayList<Uri> photoSetURIs = new ArrayList<>();
-        if (uriBundle != null) {
-            photoSetURIs = uriBundle.getParcelableArrayList("uriArrayList");
-        }
-
-        mPresenter.initGalleryImages(photoSetURIs);
+        mPresenter.initGalleryImages(getURIsFromAddNewActivity());
         mPresenter.setupSelectListeners();
     }
 
@@ -56,9 +46,7 @@ public class GalleryActivity extends AppCompatActivity implements IGalleryActivi
         gridViewGallery = findViewById(R.id.grid_view_gallery);
 
         uriAdapter = new UriAdapter((LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE),
-                getResources().getDrawable(R.drawable.highlight),
-                mPresenter.getPhotoURIs(),
-                mPresenter);
+                getResources().getDrawable(R.drawable.highlight), mPresenter);
         gridViewGallery.setAdapter(uriAdapter);
 
         //do your shit here
@@ -70,6 +58,17 @@ public class GalleryActivity extends AppCompatActivity implements IGalleryActivi
         imageButtonDeleteSelected.setOnClickListener(this);
         imageButtonCancelSelection.setOnClickListener(this);
 
+    }
+
+    ArrayList<Uri> getURIsFromAddNewActivity(){
+        Intent intent = getIntent();
+        Bundle uriBundle = intent.getBundleExtra("bundle");
+        ArrayList<Uri> photoSetURIs = new ArrayList<>();
+        if (uriBundle != null) {
+            photoSetURIs = uriBundle.getParcelableArrayList("uriArrayList");
+        }
+
+        return photoSetURIs;
     }
 
     @Override
@@ -111,11 +110,26 @@ public class GalleryActivity extends AppCompatActivity implements IGalleryActivi
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.image_button_DeleteSelected) {
-            Toast.makeText(this, "DELETING SOMETHING", Toast.LENGTH_SHORT).show();
+            deleteSelected();
         } else
         if(view.getId() == R.id.image_button_CancelSelection){
             cancelSelections();
         }
+    }
+
+    //TODO: make sure that on db insert of filepaths, no remnants of prematurely saved images remain
+    private void deleteSelected() {
+        for(int i = 0; i < gridViewGallery.getChildCount(); i++){
+            GalleryItemView galleryItemView = (GalleryItemView) gridViewGallery.getChildAt(i);
+            if(galleryItemView.getBackground() != null){
+                this.getContentResolver().delete(mPresenter.getPhotoURIs().get(i), null, null);
+                mPresenter.removeGalleryImage(i);
+            }
+            galleryItemView.setBackground(null);
+        }
+
+        uriAdapter.updateAdapter();
+        mPresenter.forceDeselectAll();
     }
 
     void cancelSelections(){
@@ -129,5 +143,6 @@ public class GalleryActivity extends AppCompatActivity implements IGalleryActivi
     }
 
 
+    //TODO: return correct remaining URIs back to AddNewActivity after deletion
 
 }

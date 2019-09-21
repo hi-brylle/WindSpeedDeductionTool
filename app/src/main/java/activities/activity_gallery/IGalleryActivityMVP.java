@@ -19,7 +19,9 @@ public interface IGalleryActivityMVP {
         ArrayList<Uri> getPhotoURIs();
         void setupSelectListeners();
         void toggleSelectionAt(int index);
-        boolean isCurrentImageSelected(int i);
+        boolean isCurrentImageSelected(int index);
         boolean noPhotosSelected();
+        void removeGalleryImage(int index);
+        void forceDeselectAll();
     }
 }

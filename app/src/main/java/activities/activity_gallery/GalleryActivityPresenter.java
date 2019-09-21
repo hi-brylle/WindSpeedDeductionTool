@@ -82,13 +82,26 @@ class GalleryActivityPresenter implements IGalleryActivityMVP.IGalleryActivityPr
     }
 
     @Override
-    public boolean isCurrentImageSelected(int i) {
-        return galleryImages.get(i).getSelectStatus();
+    public boolean isCurrentImageSelected(int index) {
+        return galleryImages.get(index).getSelectStatus();
     }
 
     @Override
     public boolean noPhotosSelected() {
         return galleryImagesState.getNumSelected() == 0;
+    }
+
+    @Override
+    public void removeGalleryImage(int index) {
+        galleryImages.remove(index);
+        galleryImagesState.decrementSelections();
+    }
+
+    @Override
+    public void forceDeselectAll() {
+        for(int i = 0; i < galleryImages.size(); i++){
+            galleryImages.get(i).forceDeselect();
+        }
     }
 
 

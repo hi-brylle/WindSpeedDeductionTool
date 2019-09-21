@@ -19,12 +19,12 @@ public class UriAdapter extends BaseAdapter {
 
     private GalleryActivityPresenter mPresenter;
 
-    UriAdapter(LayoutInflater inflater, Drawable highlight,
-               ArrayList<Uri> uris, GalleryActivityPresenter presenter){
+    UriAdapter(LayoutInflater inflater, Drawable highlight, GalleryActivityPresenter presenter){
         this.inflater = inflater;
         this.highlight = highlight;
-        photoURIs = uris;
         mPresenter = presenter;
+        photoURIs = mPresenter.getPhotoURIs();
+
     }
 
     @Override
@@ -88,7 +88,11 @@ public class UriAdapter extends BaseAdapter {
         return view;
     }
 
-
+    void updateAdapter(){
+        photoURIs.clear();
+        photoURIs.addAll(mPresenter.getPhotoURIs());
+        notifyDataSetChanged();
+    }
 
 
 }
