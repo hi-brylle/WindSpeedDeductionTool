@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/linear_layout_DamagesRadioGroups"
         android:layout_margin="10dp"
-        android:src="@drawable/photo_camera" />
+        android:background="@mipmap/baseline_add_a_photo_black_48" />
 
     <ImageButton
         android:id="@+id/image_button_MiniGallery"

@@ -1,21 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="activities.activity_gallery.GalleryActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#25976f">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@mipmap/baseline_delete_black_36" />
+
+    </LinearLayout>
 
     <GridView
         android:id="@+id/grid_view_gallery"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:clickable="true"
-        android:columnWidth="75dp"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
+        android:layout_weight="0.1"
+        android:columnWidth="100dp"
         android:focusable="false"
         android:gravity="center"
-        android:numColumns="auto_fit"
-        android:verticalSpacing="15dp" >
-    </GridView>
+        android:numColumns="5"
+        android:verticalSpacing="5dp" />
 
-</RelativeLayout>
+</LinearLayout>

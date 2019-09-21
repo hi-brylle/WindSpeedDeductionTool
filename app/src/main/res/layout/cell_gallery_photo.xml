@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<activities.activity_gallery.GalleryItemView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/image_view_cell_item"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:scaleType="centerCrop"
     android:padding="5dp">
 
-    <ImageButton
-        android:id="@+id/image_view_cell_item"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:scaleType="fitXY" />
-
-</LinearLayout>
+</activities.activity_gallery.GalleryItemView>

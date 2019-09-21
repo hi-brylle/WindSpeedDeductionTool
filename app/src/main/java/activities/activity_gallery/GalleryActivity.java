@@ -36,7 +36,9 @@ public class GalleryActivity extends AppCompatActivity {
         }
 
         gridViewGallery = findViewById(R.id.grid_view_gallery);
-        UriAdapter uriAdapter = new UriAdapter((LayoutInflater)this.getSystemService(LAYOUT_INFLATER_SERVICE), uriArray);
+        UriAdapter uriAdapter = new UriAdapter((LayoutInflater)this.getSystemService(LAYOUT_INFLATER_SERVICE),
+                                                uriArray,
+                                                getResources().getDrawable(R.drawable.highlight));
         gridViewGallery.setAdapter(uriAdapter);
 
         //do your shit here
