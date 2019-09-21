@@ -25,7 +25,7 @@ public class GalleryImagesState{
         selectCountListener.onAtLeastOneSelected();
     }
 
-    public int returnNumSelected(){
+    public int getNumSelected(){
         return numSelected;
     }
 

@@ -20,5 +20,6 @@ public interface IGalleryActivityMVP {
         void setupSelectListeners();
         void toggleSelection(int index);
         boolean isCurrentImageSelected(int i);
+        boolean noPhotosSelected();
     }
 }

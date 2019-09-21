@@ -66,12 +66,12 @@ class GalleryActivityPresenter implements IGalleryActivityMVP.IGalleryActivityPr
             public void onAtLeastOneSelected() {
                 mvpView.showCancel();
                 mvpView.enableDelete();
-                mvpView.showAndUpdateSelectCount(galleryImagesState.returnNumSelected());
+                mvpView.showAndUpdateSelectCount(galleryImagesState.getNumSelected());
             }
 
             @Override
             public void onDecrement() {
-                mvpView.showAndUpdateSelectCount(galleryImagesState.returnNumSelected());
+                mvpView.showAndUpdateSelectCount(galleryImagesState.getNumSelected());
             }
         });
     }
@@ -84,6 +84,11 @@ class GalleryActivityPresenter implements IGalleryActivityMVP.IGalleryActivityPr
     @Override
     public boolean isCurrentImageSelected(int i) {
         return galleryImages.get(i).getSelectStatus();
+    }
+
+    @Override
+    public boolean noPhotosSelected() {
+        return galleryImagesState.getNumSelected() == 0;
     }
 
 

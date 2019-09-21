@@ -2,6 +2,7 @@ package activities.activity_gallery;
 
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,21 +49,44 @@ public class UriAdapter extends BaseAdapter {
         final ImageView imageViewPhoto = itemView.findViewById(R.id.image_view_cell_item);
         imageViewPhoto.setImageURI(photoURIs.get(i));
 
-        //TODO: set click listeners
         imageViewPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mPresenter.toggleSelection(i);
-                if(mPresenter.isCurrentImageSelected(i)){
-                    imageViewPhoto.setBackground(highlight);
+                if(mPresenter.noPhotosSelected()){
+                    Log.d("MY TAG","ZOOM IN NOW, NEW ACTIVITY");
                 } else{
-                    imageViewPhoto.setBackground(null);
+                    mPresenter.toggleSelection(i);
+                    if(mPresenter.isCurrentImageSelected(i)){
+                        imageViewPhoto.setBackground(highlight);
+                    } else{
+                        imageViewPhoto.setBackground(null);
+                    }
                 }
+            }
+        });
+
+        imageViewPhoto.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if(mPresenter.noPhotosSelected()){
+                    mPresenter.toggleSelection(i);
+
+                    if(mPresenter.isCurrentImageSelected(i)){
+                        imageViewPhoto.setBackground(highlight);
+                    } else{
+                        imageViewPhoto.setBackground(null);
+                    }
+                    return true;
+                }
+
+                return false;
             }
         });
 
         return itemView;
     }
+
+
 
 
 }
