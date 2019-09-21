@@ -6,19 +6,46 @@
     android:orientation="vertical"
     tools:context="activities.activity_gallery.GalleryActivity">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:background="#25976f">
 
         <ImageButton
+            android:id="@+id/image_button_CancelSelection"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
+            android:background="@mipmap/baseline_close_black_36" />
+
+        <TextView
+            android:id="@+id/text_view_SelectionCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/image_button_CancelSelection"
+            android:layout_toRightOf="@id/image_button_CancelSelection"
+            android:text="@string/selection_count"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/attached_photos"
+            android:textSize="25sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/image_button_DeleteSelected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_margin="10dp"
             android:background="@mipmap/baseline_delete_black_36" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <GridView
         android:id="@+id/grid_view_gallery"

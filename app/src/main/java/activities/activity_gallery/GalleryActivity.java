@@ -8,15 +8,22 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.GridView;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.example.windspeeddeductiontool.R;
 
 import java.util.ArrayList;
 
-public class GalleryActivity extends AppCompatActivity {
+public class GalleryActivity extends AppCompatActivity implements IGalleryActivityMVP.IGalleryActivityView {
+
+    private GalleryActivityPresenter mPresenter;
 
     ArrayList<Uri> photoSetURIs;
     GridView gridViewGallery;
+    ImageButton imageButtonDeleteSelected;
+    ImageButton imageButtonCancelSelection;
+    TextView textViewSelectionCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,5 +49,14 @@ public class GalleryActivity extends AppCompatActivity {
         gridViewGallery.setAdapter(uriAdapter);
 
         //do your shit here
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        imageButtonDeleteSelected = findViewById(R.id.image_button_DeleteSelected);
+        imageButtonCancelSelection = findViewById(R.id.image_button_CancelSelection);
+        textViewSelectionCount = findViewById(R.id.text_view_SelectionCount);
     }
 }

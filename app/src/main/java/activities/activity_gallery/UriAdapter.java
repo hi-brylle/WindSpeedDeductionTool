@@ -6,12 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.example.windspeeddeductiontool.R;
 
-public class UriAdapter extends BaseAdapter {
+public class UriAdapter extends BaseAdapter implements IGalleryActivityMVP.IGalleryActivityAdapterView{
     private LayoutInflater inflater;
     private Uri[] photoURIs;
     private Drawable highlight;
@@ -45,6 +44,7 @@ public class UriAdapter extends BaseAdapter {
         imageViewPhoto.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+                //TODO: do callback here indicating it got selected
                 imageViewPhoto.setBackground(highlight);
                 return true;
             }

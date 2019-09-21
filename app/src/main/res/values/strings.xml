@@ -4,4 +4,6 @@
     <string name="header_latitude">Latitude: </string>
     <string name="appRootDir">windSpeedDeductionTool</string>
     <string name="photoReferencePrefix">photos_for_id_</string>
+    <string name="attached_photos">Attached Photos</string>
+    <string name="selection_count">0</string>
 </resources>
