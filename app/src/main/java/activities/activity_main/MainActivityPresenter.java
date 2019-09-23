@@ -1,14 +1,23 @@
 package activities.activity_main;
 
-public class MainActivityPresenter implements IMainActivityMVP.IMainActivityPresenter {
-    private IMainActivityMVP.IMainActivityView mMVPView;
+import helper_classes.db_helper.IDBHelper;
 
-    MainActivityPresenter(IMainActivityMVP.IMainActivityView mvpView){
-        mMVPView = mvpView;
+public class MainActivityPresenter implements IMainActivityMVP.IMainActivityPresenter {
+    private IMainActivityMVP.IMainActivityView mvpView;
+    private IDBHelper dbHelper;
+
+    MainActivityPresenter(IMainActivityMVP.IMainActivityView mvpView, IDBHelper dbHelper){
+        this.mvpView = mvpView;
+        this.dbHelper = dbHelper;
     }
 
     @Override
     public void handleNewButtonClick() {
-        mMVPView.openAddNewEntryActivity();
+        mvpView.openAddNewEntryActivity();
+    }
+
+    @Override
+    public IDBHelper getDBHelper() {
+        return dbHelper;
     }
 }

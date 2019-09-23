@@ -213,6 +213,12 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
     }
 
     @Override
+    public Cursor getAllEntries() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_NAME_INPUTS, null);
+    }
+
+    @Override
     public String[] getFilepathsForID(int id) {
         return getFilepaths(id);
     }

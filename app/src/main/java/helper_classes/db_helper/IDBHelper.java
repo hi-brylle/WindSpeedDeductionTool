@@ -1,5 +1,7 @@
 package helper_classes.db_helper;
 
+import android.database.Cursor;
+
 import java.util.HashMap;
 
 public interface IDBHelper {
@@ -7,5 +9,6 @@ public interface IDBHelper {
     String getLatestFilepathsTableName();
     String getCurrentFilepathsTableName();
     boolean insertFilepaths(String folderName, String[] currentSetFilepaths);
+    Cursor getAllEntries();
     String[] getFilepathsForID(int id);
 }

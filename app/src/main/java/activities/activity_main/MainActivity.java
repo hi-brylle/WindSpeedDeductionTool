@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.windspeeddeductiontool.R;
@@ -21,6 +22,7 @@ import java.util.List;
 
 import activities.activity_add_new_entry.AddNewEntryActivity;
 import helper_classes.LocationService;
+import helper_classes.db_helper.DBHelper;
 
 public class MainActivity extends AppCompatActivity implements IMainActivityMVP.IMainActivityView {
 
@@ -42,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements IMainActivityMVP.
 
         checkPermissions();
 
-        mPresenter = new MainActivityPresenter(this);
+        mPresenter = new MainActivityPresenter(this, new DBHelper(this));
     }
 
     @Override
@@ -50,6 +52,10 @@ public class MainActivity extends AppCompatActivity implements IMainActivityMVP.
         super.onStart();
 
         ImageButton imageButtonNew = findViewById(R.id.image_button_new);
+        ListView listViewDBEntries = findViewById(R.id.list_view_entries);
+
+        DBEntriesAdapter dbEntriesAdapter = new DBEntriesAdapter(this, mPresenter.getDBHelper().getAllEntries());
+        listViewDBEntries.setAdapter(dbEntriesAdapter);
 
         imageButtonNew.setOnClickListener(new View.OnClickListener() {
             @Override
