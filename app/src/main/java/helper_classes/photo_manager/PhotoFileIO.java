@@ -18,8 +18,6 @@ public class PhotoFileIO {
     private File currentPhotoSetDir;
     private ArrayList<Uri> currentPhotoSetURIs;
 
-    private INonNullUriListener nonNullUriListener;
-
     private int setCounter = 0;
 
     public PhotoFileIO(IAddNewEntryActivityMVP.IAddNewEntryActivityView mvpView) {
@@ -121,10 +119,6 @@ public class PhotoFileIO {
         }
 
         setCounter = 0;
-    }
-
-    public void addNonNullUriListener(INonNullUriListener listener){
-        nonNullUriListener = listener;
     }
 
 }
