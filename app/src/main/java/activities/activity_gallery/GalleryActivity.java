@@ -34,6 +34,11 @@ public class GalleryActivity extends AppCompatActivity implements IGalleryActivi
 
         mPresenter.initGalleryImages(getURIsFromAddNewActivity());
         mPresenter.setupSelectListeners();
+
+        uriAdapter = new UriAdapter((LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE),
+                getResources().getDrawable(R.drawable.highlight), mPresenter);
+        gridViewGallery = findViewById(R.id.grid_view_gallery);
+        gridViewGallery.setAdapter(uriAdapter);
     }
 
     @Override
@@ -43,13 +48,6 @@ public class GalleryActivity extends AppCompatActivity implements IGalleryActivi
         imageButtonDeleteSelected = findViewById(R.id.image_button_DeleteSelected);
         imageButtonCancelSelection = findViewById(R.id.image_button_CancelSelection);
         textViewSelectionCount = findViewById(R.id.text_view_SelectionCount);
-        gridViewGallery = findViewById(R.id.grid_view_gallery);
-
-        uriAdapter = new UriAdapter((LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE),
-                getResources().getDrawable(R.drawable.highlight), mPresenter);
-        gridViewGallery.setAdapter(uriAdapter);
-
-        //do your shit here
 
         disableDelete();
         hideCancel();
@@ -119,13 +117,13 @@ public class GalleryActivity extends AppCompatActivity implements IGalleryActivi
 
     //TODO: make sure that on db insert of filepaths, no remnants of prematurely saved images remain
     private void deleteSelected() {
-        for(int i = 0; i < gridViewGallery.getChildCount(); i++){
-            GalleryItemView galleryItemView = (GalleryItemView) gridViewGallery.getChildAt(i);
-            if(galleryItemView.getBackground() != null){
-                this.getContentResolver().delete(mPresenter.getPhotoURIs().get(i), null, null);
-                mPresenter.removeGalleryImage(i);
+        for(int i = 0; i < mPresenter.getURIsSize(); i++){
+            if(mPresenter.isImageSelected(i)){
+                this.getContentResolver().delete(mPresenter.getPhotoURIAt(i), null, null);
+                mPresenter.removeGalleryImageAt(i);
+                GalleryItemView galleryItemView = (GalleryItemView) gridViewGallery.getChildAt(i);
+                galleryItemView.setBackground(null);
             }
-            galleryItemView.setBackground(null);
         }
 
         uriAdapter.updateAdapter();

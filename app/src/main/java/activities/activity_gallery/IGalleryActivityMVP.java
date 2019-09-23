@@ -16,12 +16,13 @@ public interface IGalleryActivityMVP {
 
     interface IGalleryActivityPresenter{
         void initGalleryImages(ArrayList<Uri> photoSetURIs);
-        ArrayList<Uri> getPhotoURIs();
+        Uri getPhotoURIAt(int index);
+        int getURIsSize();
         void setupSelectListeners();
         void toggleSelectionAt(int index);
-        boolean isCurrentImageSelected(int index);
+        boolean isImageSelected(int index);
         boolean noPhotosSelected();
-        void removeGalleryImage(int index);
+        void removeGalleryImageAt(int index);
         void forceDeselectAll();
     }
 }

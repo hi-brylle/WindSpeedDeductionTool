@@ -29,13 +29,20 @@ class GalleryActivityPresenter implements IGalleryActivityMVP.IGalleryActivityPr
     }
 
     @Override
-    public ArrayList<Uri> getPhotoURIs() {
-        ArrayList<Uri> photoURIs = new ArrayList<>();
+    public Uri getPhotoURIAt(int index) {
+        return galleryImages.get(index).getPhotoUri();
+    }
+
+    @Override
+    public int getURIsSize() {
+        int size = 0;
         for(int i = 0; i < galleryImages.size(); i++){
-            photoURIs.add(galleryImages.get(i).getPhotoUri());
+            if(galleryImages.get(i).getPhotoUri() != null){
+                size++;
+            }
         }
 
-        return photoURIs;
+        return size;
     }
 
     @Override
@@ -82,7 +89,7 @@ class GalleryActivityPresenter implements IGalleryActivityMVP.IGalleryActivityPr
     }
 
     @Override
-    public boolean isCurrentImageSelected(int index) {
+    public boolean isImageSelected(int index) {
         return galleryImages.get(index).getSelectStatus();
     }
 
@@ -92,8 +99,9 @@ class GalleryActivityPresenter implements IGalleryActivityMVP.IGalleryActivityPr
     }
 
     @Override
-    public void removeGalleryImage(int index) {
+    public void removeGalleryImageAt(int index) {
         galleryImages.remove(index);
+        galleryImages.trimToSize();
         galleryImagesState.decrementSelections();
     }
 

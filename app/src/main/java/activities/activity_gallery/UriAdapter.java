@@ -1,7 +1,6 @@
 package activities.activity_gallery;
 
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,11 +9,8 @@ import android.widget.BaseAdapter;
 
 import com.example.windspeeddeductiontool.R;
 
-import java.util.ArrayList;
-
 public class UriAdapter extends BaseAdapter {
     private LayoutInflater inflater;
-    private ArrayList<Uri> photoURIs;
     private Drawable highlight;
 
     private GalleryActivityPresenter mPresenter;
@@ -23,13 +19,11 @@ public class UriAdapter extends BaseAdapter {
         this.inflater = inflater;
         this.highlight = highlight;
         mPresenter = presenter;
-        photoURIs = mPresenter.getPhotoURIs();
-
     }
 
     @Override
     public int getCount() {
-        return photoURIs.size();
+        return mPresenter.getURIsSize();
     }
 
     @Override
@@ -49,7 +43,7 @@ public class UriAdapter extends BaseAdapter {
         }
 
         final GalleryItemView imageViewPhoto = view.findViewById(R.id.image_view_cell_item);
-        imageViewPhoto.setImageURI(photoURIs.get(i));
+        imageViewPhoto.setImageURI(mPresenter.getPhotoURIAt(i));
 
         imageViewPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,7 +52,7 @@ public class UriAdapter extends BaseAdapter {
                     Log.d("MY TAG","ZOOM IN NOW, NEW ACTIVITY");
                 } else{
                     mPresenter.toggleSelectionAt(i);
-                    if(mPresenter.isCurrentImageSelected(i)){
+                    if(mPresenter.isImageSelected(i)){
                         imageViewPhoto.setBackground(highlight);
                     } else{
                         imageViewPhoto.setBackground(null);
@@ -73,7 +67,7 @@ public class UriAdapter extends BaseAdapter {
                 if(mPresenter.noPhotosSelected()){
                     mPresenter.toggleSelectionAt(i);
 
-                    if(mPresenter.isCurrentImageSelected(i)){
+                    if(mPresenter.isImageSelected(i)){
                         imageViewPhoto.setBackground(highlight);
                     } else{
                         imageViewPhoto.setBackground(null);
@@ -89,8 +83,6 @@ public class UriAdapter extends BaseAdapter {
     }
 
     void updateAdapter(){
-        photoURIs.clear();
-        photoURIs.addAll(mPresenter.getPhotoURIs());
         notifyDataSetChanged();
     }
 
