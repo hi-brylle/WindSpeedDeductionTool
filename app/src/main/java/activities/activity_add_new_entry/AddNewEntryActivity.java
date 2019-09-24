@@ -284,6 +284,13 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                 toggleAddNewButtonOnOff();
             }
         });
+
+        UriListSingleton uriListSingleton = UriListSingleton.getInstance();
+        if(uriListSingleton.getUriListSize() == 0){
+            final ImageButton imageButtonMiniGallery = findViewById(R.id.image_button_MiniGallery);
+            imageButtonMiniGallery.setVisibility(View.GONE);
+        }
+
     }
 
     @Override

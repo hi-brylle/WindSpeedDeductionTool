@@ -56,7 +56,7 @@ class GalleryActivityPresenter implements IGalleryActivityMVP.IGalleryActivityPr
     @Override
     public void setupSelectListeners() {
         for(int i = 0; i < galleryImages.size(); i++){
-            Log.d("MY TAG", "LISTENERS: " + i + 1);
+            Log.d("MY TAG", "LISTENERS: " + (int)(i + 1));
             galleryImages.get(i).addImageSelectListeners(new IGalleryImage.IImageSelectListeners() {
                 @Override
                 public void onImageNotSelected() {
@@ -110,7 +110,6 @@ class GalleryActivityPresenter implements IGalleryActivityMVP.IGalleryActivityPr
     @Override
     public void removeGalleryImageAt(int index) {
         galleryImages.remove(index);
-        galleryImages.trimToSize();
         galleryImagesState.decrementSelections();
     }
 

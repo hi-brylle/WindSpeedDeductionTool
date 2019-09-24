@@ -21,6 +21,9 @@ public class UriListSingleton {
     }
 
     public synchronized void addUri(Uri uri){
+        if(UriList == null){
+            UriList = new ArrayList<>();
+        }
         UriList.add(uri);
     }
 
