@@ -32,6 +32,10 @@ public class UriListSingleton {
         return UriList.size();
     }
 
+    public synchronized  void removeUriAt(int index){
+        UriList.remove(index);
+    }
+
     public synchronized void clearUriList(){
         UriList.clear();
     }

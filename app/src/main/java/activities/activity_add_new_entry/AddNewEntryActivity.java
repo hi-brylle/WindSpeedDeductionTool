@@ -30,6 +30,7 @@ import activities.activity_gallery.GalleryActivity;
 import helper_classes.db_helper.DBHelper;
 import helper_classes.photo_manager.CameraRequest;
 import helper_classes.photo_manager.PhotoFileIO;
+import helper_classes.photo_manager.UriListSingleton;
 
 public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEntryActivityMVP.IAddNewEntryActivityView, View.OnClickListener {
 
@@ -211,6 +212,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         File file = null;
         try{
             file = photoFileIO.createImageFile(mPresenter.getCurrentFilepathsTableName());
+
             photoFileIO.addToCurrentPhotoFileset(FileProvider.getUriForFile(this, CameraRequest.CAMERA_IMAGE_FILE_PROVIDER, file));
 
             Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
@@ -242,9 +244,6 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
     private void goToGalleryActivity(){
         Intent galleryIntent = new Intent(AddNewEntryActivity.this, GalleryActivity.class);
-        Bundle uriBundle = new Bundle();
-        uriBundle.putParcelableArrayList("uriArrayList", photoFileIO.getPhotoSetURIs());
-        galleryIntent.putExtra("bundle", uriBundle);
         startActivity(galleryIntent);
     }
 

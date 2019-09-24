@@ -1,12 +1,14 @@
 package activities.activity_gallery;
 
 import android.net.Uri;
+import android.util.Log;
 
 import java.util.ArrayList;
 
 import activities.activity_gallery.gallery_image.GalleryImage;
 import activities.activity_gallery.gallery_image.GalleryImagesState;
 import activities.activity_gallery.gallery_image.IGalleryImage;
+import helper_classes.photo_manager.UriListSingleton;
 
 class GalleryActivityPresenter implements IGalleryActivityMVP.IGalleryActivityPresenter {
     private IGalleryActivityMVP.IGalleryActivityView mvpView;
@@ -18,36 +20,43 @@ class GalleryActivityPresenter implements IGalleryActivityMVP.IGalleryActivityPr
     }
 
     @Override
-    public void initGalleryImages(ArrayList<Uri> photoSetURIs) {
-        galleryImages = new ArrayList<>();
-
-        for(int i = 0; i < photoSetURIs.size(); i++){
-            galleryImages.add(new GalleryImage(photoSetURIs.get(i)));
+    public void initGalleryImages() {
+        if(galleryImages == null){
+            galleryImages = new ArrayList<>();
+        } else{
+            galleryImages.clear();
         }
 
-        galleryImagesState = new GalleryImagesState();
+        UriListSingleton uriListSingleton = UriListSingleton.getInstance();
+        for(int i = 0; i < uriListSingleton.getUriListSize(); i++){
+            galleryImages.add(new GalleryImage());
+        }
+
+        if(galleryImagesState == null){
+            galleryImagesState = new GalleryImagesState();
+        } else{
+            galleryImagesState.resetNumSelections();
+        }
+
+        setupSelectListeners();
     }
 
     @Override
     public Uri getPhotoURIAt(int index) {
-        return galleryImages.get(index).getPhotoUri();
+        UriListSingleton uriListSingleton = UriListSingleton.getInstance();
+        return uriListSingleton.getUriAt(index);
     }
 
     @Override
-    public int getURIsSize() {
-        int size = 0;
-        for(int i = 0; i < galleryImages.size(); i++){
-            if(galleryImages.get(i).getPhotoUri() != null){
-                size++;
-            }
-        }
-
-        return size;
+    public int getUriListSize() {
+        UriListSingleton uriListSingleton = UriListSingleton.getInstance();
+        return uriListSingleton.getUriListSize();
     }
 
     @Override
     public void setupSelectListeners() {
         for(int i = 0; i < galleryImages.size(); i++){
+            Log.d("MY TAG", "LISTENERS: " + i + 1);
             galleryImages.get(i).addImageSelectListeners(new IGalleryImage.IImageSelectListeners() {
                 @Override
                 public void onImageNotSelected() {
@@ -89,7 +98,7 @@ class GalleryActivityPresenter implements IGalleryActivityMVP.IGalleryActivityPr
     }
 
     @Override
-    public boolean isImageSelected(int index) {
+    public boolean isImageSelectedAt(int index) {
         return galleryImages.get(index).getSelectStatus();
     }
 

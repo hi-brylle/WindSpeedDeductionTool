@@ -8,6 +8,10 @@ public class GalleryImagesState{
         numSelected = 0;
     }
 
+    public void resetNumSelections(){
+        numSelected = 0;
+    }
+
     public void decrementSelections(){
         if(numSelected > 0){
             numSelected--;

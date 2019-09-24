@@ -1,12 +1,12 @@
 package helper_classes.photo_manager;
 
+import android.net.Uri;
 import android.os.Environment;
 
 import com.example.windspeeddeductiontool.R;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import activities.activity_add_new_entry.IAddNewEntryActivityMVP;
 
@@ -89,22 +89,18 @@ public class PhotoFileIO {
     }
 
     public void addToCurrentPhotoFileset(Uri uri) {
-        if (currentPhotoSetURIs == null || currentPhotoSetURIs.size() == 0) {
-            currentPhotoSetURIs = new ArrayList<>();
-        }
-        currentPhotoSetURIs.add(uri);
-    }
-
-    public ArrayList<Uri> getPhotoSetURIs(){
-        return currentPhotoSetURIs;
+        UriListSingleton uriListSingleton = UriListSingleton.getInstance();
+        uriListSingleton.addUri(uri);
     }
 
     public Uri getLatestUri() {
-        return currentPhotoSetURIs.get(currentPhotoSetURIs.size() - 1);
+        UriListSingleton uriListSingleton = UriListSingleton.getInstance();
+        return uriListSingleton.getUriAt(uriListSingleton.getUriListSize() - 1);
     }
 
     public boolean doImagesExist() {
-        return currentPhotoSetURIs != null && currentPhotoSetURIs.size() > 0;
+        UriListSingleton uriListSingleton = UriListSingleton.getInstance();
+        return uriListSingleton.getUriListSize() > 0;
     }
 
     public void dumpURIs() {
@@ -112,10 +108,8 @@ public class PhotoFileIO {
             currentPhotoSetDir = null;
         }
 
-        if (currentPhotoSetURIs != null) {
-            currentPhotoSetURIs.clear();
-            currentPhotoSetURIs = null;
-        }
+        UriListSingleton uriListSingleton = UriListSingleton.getInstance();
+        uriListSingleton.clearUriList();
 
         setCounter = 0;
     }

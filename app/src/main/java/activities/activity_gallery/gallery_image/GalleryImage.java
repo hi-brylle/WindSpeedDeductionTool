@@ -1,19 +1,11 @@
 package activities.activity_gallery.gallery_image;
 
-import android.net.Uri;
-
 public class GalleryImage implements IGalleryImage{
-    private Uri photoUri;
     private boolean isSelected;
     private IImageSelectListeners imageSelectListener;
 
-    public GalleryImage(Uri photoUri){
-        this.photoUri = photoUri;
+    public GalleryImage(){
         isSelected = false;
-    }
-
-    public Uri getPhotoUri() {
-        return photoUri;
     }
 
     public void toggleSelection(){

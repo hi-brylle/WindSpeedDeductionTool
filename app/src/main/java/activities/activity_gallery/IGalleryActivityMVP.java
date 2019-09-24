@@ -2,8 +2,6 @@ package activities.activity_gallery;
 
 import android.net.Uri;
 
-import java.util.ArrayList;
-
 public interface IGalleryActivityMVP {
     interface IGalleryActivityView{
         void enableDelete();
@@ -15,12 +13,12 @@ public interface IGalleryActivityMVP {
     }
 
     interface IGalleryActivityPresenter{
-        void initGalleryImages(ArrayList<Uri> photoSetURIs);
+        void initGalleryImages();
         Uri getPhotoURIAt(int index);
-        int getURIsSize();
+        int getUriListSize();
         void setupSelectListeners();
         void toggleSelectionAt(int index);
-        boolean isImageSelected(int index);
+        boolean isImageSelectedAt(int index);
         boolean noPhotosSelected();
         void removeGalleryImageAt(int index);
         void forceDeselectAll();

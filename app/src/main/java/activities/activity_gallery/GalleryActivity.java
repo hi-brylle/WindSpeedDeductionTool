@@ -2,8 +2,6 @@ package activities.activity_gallery;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,8 +10,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.windspeeddeductiontool.R;
-
-import java.util.ArrayList;
 
 public class GalleryActivity extends AppCompatActivity implements IGalleryActivityMVP.IGalleryActivityView, View.OnClickListener {
 
@@ -32,13 +28,7 @@ public class GalleryActivity extends AppCompatActivity implements IGalleryActivi
 
         mPresenter = new GalleryActivityPresenter(this);
 
-        mPresenter.initGalleryImages(getURIsFromAddNewActivity());
-        mPresenter.setupSelectListeners();
-
-        uriAdapter = new UriAdapter((LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE),
-                getResources().getDrawable(R.drawable.highlight), mPresenter);
-        gridViewGallery = findViewById(R.id.grid_view_gallery);
-        gridViewGallery.setAdapter(uriAdapter);
+        mPresenter.initGalleryImages();
     }
 
     @Override
@@ -48,6 +38,12 @@ public class GalleryActivity extends AppCompatActivity implements IGalleryActivi
         imageButtonDeleteSelected = findViewById(R.id.image_button_DeleteSelected);
         imageButtonCancelSelection = findViewById(R.id.image_button_CancelSelection);
         textViewSelectionCount = findViewById(R.id.text_view_SelectionCount);
+        gridViewGallery = findViewById(R.id.grid_view_gallery);
+
+        uriAdapter = new UriAdapter((LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE),
+                getResources().getDrawable(R.drawable.highlight), mPresenter);
+
+        gridViewGallery.setAdapter(uriAdapter);
 
         disableDelete();
         hideCancel();
@@ -56,17 +52,6 @@ public class GalleryActivity extends AppCompatActivity implements IGalleryActivi
         imageButtonDeleteSelected.setOnClickListener(this);
         imageButtonCancelSelection.setOnClickListener(this);
 
-    }
-
-    ArrayList<Uri> getURIsFromAddNewActivity(){
-        Intent intent = getIntent();
-        Bundle uriBundle = intent.getBundleExtra("bundle");
-        ArrayList<Uri> photoSetURIs = new ArrayList<>();
-        if (uriBundle != null) {
-            photoSetURIs = uriBundle.getParcelableArrayList("uriArrayList");
-        }
-
-        return photoSetURIs;
     }
 
     @Override
@@ -104,7 +89,6 @@ public class GalleryActivity extends AppCompatActivity implements IGalleryActivi
         textViewSelectionCount.setVisibility(View.GONE);
     }
 
-
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.image_button_DeleteSelected) {
@@ -117,23 +101,13 @@ public class GalleryActivity extends AppCompatActivity implements IGalleryActivi
 
     //TODO: make sure that on db insert of filepaths, no remnants of prematurely saved images remain
     private void deleteSelected() {
-        for(int i = 0; i < mPresenter.getURIsSize(); i++){
-            if(mPresenter.isImageSelected(i)){
-                this.getContentResolver().delete(mPresenter.getPhotoURIAt(i), null, null);
-                mPresenter.removeGalleryImageAt(i);
-                GalleryItemView galleryItemView = (GalleryItemView) gridViewGallery.getChildAt(i);
-                galleryItemView.setBackground(null);
-            }
-        }
-
-        uriAdapter.updateAdapter();
-        mPresenter.forceDeselectAll();
+        /*this.getContentResolver().delete(mPresenter.getPhotoURIAt(i), null, null);*/
     }
 
     void cancelSelections(){
-        for(int i = 0; i < gridViewGallery.getChildCount(); i++){
-            GalleryItemView galleryItemView = (GalleryItemView) gridViewGallery.getChildAt(i);
-            if(galleryItemView.getBackground() != null){
+        for(int i = 0; i < mPresenter.getUriListSize(); i++){
+            if(mPresenter.isImageSelectedAt(i)){
+                GalleryItemView galleryItemView = (GalleryItemView) gridViewGallery.getChildAt(i);
                 mPresenter.toggleSelectionAt(i);
                 galleryItemView.setBackground(null);
             }

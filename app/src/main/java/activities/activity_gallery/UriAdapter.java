@@ -23,7 +23,7 @@ public class UriAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return mPresenter.getURIsSize();
+        return mPresenter.getUriListSize();
     }
 
     @Override
@@ -52,7 +52,7 @@ public class UriAdapter extends BaseAdapter {
                     Log.d("MY TAG","ZOOM IN NOW, NEW ACTIVITY");
                 } else{
                     mPresenter.toggleSelectionAt(i);
-                    if(mPresenter.isImageSelected(i)){
+                    if(mPresenter.isImageSelectedAt(i)){
                         imageViewPhoto.setBackground(highlight);
                     } else{
                         imageViewPhoto.setBackground(null);
@@ -67,7 +67,7 @@ public class UriAdapter extends BaseAdapter {
                 if(mPresenter.noPhotosSelected()){
                     mPresenter.toggleSelectionAt(i);
 
-                    if(mPresenter.isImageSelected(i)){
+                    if(mPresenter.isImageSelectedAt(i)){
                         imageViewPhoto.setBackground(highlight);
                     } else{
                         imageViewPhoto.setBackground(null);
