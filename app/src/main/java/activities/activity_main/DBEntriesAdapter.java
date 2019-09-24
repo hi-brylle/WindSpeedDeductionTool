@@ -10,8 +10,6 @@ import android.widget.TextView;
 
 import com.example.windspeeddeductiontool.R;
 
-import org.w3c.dom.Text;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -37,6 +35,7 @@ public class DBEntriesAdapter extends CursorAdapter {
 
         Date mePlease = new Date(unixTime);
         SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
+        //TODO: make the format pretty, please, pretty please
         String readableDate = sdf.format(mePlease);
 
         textViewID.setText(String.valueOf(id));

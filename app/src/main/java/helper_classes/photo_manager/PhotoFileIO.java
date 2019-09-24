@@ -1,6 +1,5 @@
 package helper_classes.photo_manager;
 
-import android.net.Uri;
 import android.os.Environment;
 
 import com.example.windspeeddeductiontool.R;
@@ -16,7 +15,6 @@ public class PhotoFileIO {
 
     private File appRootDirectory;
     private File currentPhotoSetDir;
-    private ArrayList<Uri> currentPhotoSetURIs;
 
     private int setCounter = 0;
 
@@ -73,10 +71,11 @@ public class PhotoFileIO {
     }
 
     public String[] getCurrentSetFilepaths() {
-        String[] currentSetFilepaths = new String[currentPhotoSetURIs.size()];
+        UriListSingleton uriListSingleton = UriListSingleton.getInstance();
+        String[] currentSetFilepaths = new String[uriListSingleton.getUriListSize()];
 
         for (int i = 0; i < currentSetFilepaths.length; i++) {
-            currentSetFilepaths[i] = currentPhotoSetURIs.get(i).getPath().replace("//", "/");
+            currentSetFilepaths[i] = uriListSingleton.getUriAt(i).getPath().replace("//", "/");
         }
 
         return currentSetFilepaths;

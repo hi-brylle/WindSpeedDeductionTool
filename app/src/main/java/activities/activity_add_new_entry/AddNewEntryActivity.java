@@ -70,13 +70,6 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         buttonAddNewEntry = findViewById(R.id.button_AddNewEntry);
         final ImageButton imageButtonAttachPhoto = findViewById(R.id.image_button_AttachPhoto);
 
-        /*photoFileIO.addNonNullUriListener(new INonNullUriListener() {
-            @Override
-            public void onNonNullPhotoURI() {
-                setMiniGalleryButtonResource(photoFileIO.getLatestUri());
-            }
-        });*/
-
         toggleAddNewButtonOnOff();
         //TODO: make the gps fix listener listen only on the first fix
         mPresenter.addGPSFixListener(new IGPSFixListener() {
