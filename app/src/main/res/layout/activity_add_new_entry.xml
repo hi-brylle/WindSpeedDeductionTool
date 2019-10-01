@@ -34,7 +34,7 @@
 
     <include
         android:id="@+id/linear_layout_DamagesRadioGroups"
-        layout="@layout/content_damage_radio_buttons"
+        layout="@layout/content_envelope_damages"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/button_AddNewEntry" />

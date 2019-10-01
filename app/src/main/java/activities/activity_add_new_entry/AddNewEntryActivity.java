@@ -38,9 +38,6 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
     private TextView textViewLongitude;
     private TextView textViewLatitude;
-    private RadioGroup radioGroupRoofDamage;
-    private RadioGroup radioGroupWindowsDamage;
-    private RadioGroup radioGroupWallsDamage;
     private Button buttonAddNewEntry;
 
     private BroadcastReceiver locationBroadcastReceiver;
@@ -65,9 +62,6 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
         textViewLongitude = findViewById(R.id.text_view_CurrentLongitude);
         textViewLatitude = findViewById(R.id.text_view_CurrentLatitude);
-        radioGroupRoofDamage = findViewById(R.id.radio_group_RoofDamage);
-        radioGroupWindowsDamage = findViewById(R.id.radio_group_WindowsDamage);
-        radioGroupWallsDamage = findViewById(R.id.radio_group_WallsDamage);
         buttonAddNewEntry = findViewById(R.id.button_AddNewEntry);
         final ImageButton imageButtonAttachPhoto = findViewById(R.id.image_button_AttachPhoto);
 

@@ -7,12 +7,13 @@
     tools:context="activities.activity_envelope_damage.activity_envelope_damage">
 
     <TextView
+        android:id="@+id/text_view_EnvelopeComponent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="envelope component" />
 
     <RadioGroup
-        android:id="@+id/radio_group_envelopeDamage"
+        android:id="@+id/radio_group_EnvelopeDamage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
@@ -37,6 +38,7 @@
     </RadioGroup>
 
     <Button
+        android:id="@+id/button_ConfirmDamage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Okay" />
