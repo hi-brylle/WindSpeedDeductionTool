@@ -12,9 +12,6 @@ import android.widget.TextView;
 
 import com.example.windspeeddeductiontool.R;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
 import helper_classes.photo_manager.UriListSingleton;
 
 public class GalleryActivity extends AppCompatActivity implements IGalleryActivityMVP.IGalleryActivityView, View.OnClickListener {

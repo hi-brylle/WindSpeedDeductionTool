@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="activities.activity_envelope_damage.activity_envelope_damage">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="envelope component" />
+
+    <RadioGroup
+        android:id="@+id/radio_group_envelopeDamage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/radio_button_damageMinimal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="minimal" />
+
+        <RadioButton
+            android:id="@+id/radio_button_damageModerate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="moderate" />
+
+        <RadioButton
+            android:id="@+id/radio_button_damageSevere"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="severe" />
+
+    </RadioGroup>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Okay" />
+
+</LinearLayout>
