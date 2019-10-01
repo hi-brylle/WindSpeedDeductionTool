@@ -74,38 +74,6 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
             }
         });
 
-        //there is a stupid bug in the framework in which when calling clearCheck(),
-        //setOnCheckedChangeListener is called twice, but by the second time it is called,
-        //rb loses reference to the checked button because its selection was just cleared,
-        //and so, a null check is done first; smh Google, you're a shame
-        radioGroupRoofDamage.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                RadioButton rb = findViewById(i);
-                if (rb != null && rb.isChecked()) {
-                    componentToDmgDescriptions.put("roofDmg", rb.getText().toString());
-                }
-            }
-        });
-        radioGroupWindowsDamage.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                RadioButton rb = findViewById(i);
-                if (rb != null && rb.isChecked()) {
-                    componentToDmgDescriptions.put("windowsDmg", rb.getText().toString());
-                }
-            }
-        });
-        radioGroupWallsDamage.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                RadioButton rb = findViewById(i);
-                if (rb != null && rb.isChecked()) {
-                    componentToDmgDescriptions.put("wallsDmg", rb.getText().toString());
-                }
-            }
-        });
-
         buttonAddNewEntry.setOnClickListener(this);
 
         imageButtonAttachPhoto.setOnClickListener(this);
@@ -122,20 +90,9 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         imageButtonMiniGallery.setOnClickListener(this);
     }
 
-    private void deselectRadioGroups() {
-        radioGroupRoofDamage.clearCheck();
-        radioGroupWindowsDamage.clearCheck();
-        radioGroupWallsDamage.clearCheck();
-    }
-
-    public boolean areAllRadioGroupsChecked() {
-        return radioGroupRoofDamage.getCheckedRadioButtonId() != -1 &&
-                radioGroupWindowsDamage.getCheckedRadioButtonId() != -1 &&
-                radioGroupWallsDamage.getCheckedRadioButtonId() != -1;
-    }
-
     public void toggleAddNewButtonOnOff() {
-        if (areAllRadioGroupsChecked()) {
+        //TODO: the following logic is just a placeholder
+        if (!buttonAddNewEntry.isEnabled()) {
             buttonAddNewEntry.setEnabled(true);
         } else {
             buttonAddNewEntry.setEnabled(false);
@@ -175,7 +132,6 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     }
 
     private void addNewEntry(){
-        deselectRadioGroups();
         toggleAddNewButtonOnOff();
 
         boolean dataInsertSuccess = mPresenter.passDataToDBHelper(componentToDmgDescriptions);
