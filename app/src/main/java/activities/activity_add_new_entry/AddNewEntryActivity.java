@@ -14,9 +14,8 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
+import activities.activity_envelope_damage.EnvelopeDamage;
 import activities.activity_gallery.GalleryActivity;
 import helper_classes.db_helper.DBHelper;
 import helper_classes.photo_manager.CameraRequest;
@@ -39,6 +39,12 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     private TextView textViewLongitude;
     private TextView textViewLatitude;
     private Button buttonAddNewEntry;
+    private ImageButton imageButtonRoofDamageEdit;
+    private ImageButton imageButtonWindowsDamageEdit;
+    private ImageButton imageButtonWallsDamageEdit;
+    private EditText editTextRoofDamage;
+    private EditText editTextWindowsDamage;
+    private EditText editTextWallsDamage;
 
     private BroadcastReceiver locationBroadcastReceiver;
 
@@ -64,6 +70,12 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         textViewLatitude = findViewById(R.id.text_view_CurrentLatitude);
         buttonAddNewEntry = findViewById(R.id.button_AddNewEntry);
         final ImageButton imageButtonAttachPhoto = findViewById(R.id.image_button_AttachPhoto);
+        imageButtonRoofDamageEdit = findViewById(R.id.image_button_RoofDamageEdit);
+        imageButtonWindowsDamageEdit = findViewById(R.id.image_button_WindowsDamageEdit);
+        imageButtonWallsDamageEdit = findViewById(R.id.image_button_WallsDamageEdit);
+        editTextRoofDamage = findViewById(R.id.edit_text_RoofDamage);
+        editTextWindowsDamage = findViewById(R.id.edit_text_WindowsDamage);
+        editTextWallsDamage = findViewById(R.id.edit_text_WallsDamage);
 
         toggleAddNewButtonOnOff();
         //TODO: make the gps fix listener listen only on the first fix
@@ -75,6 +87,10 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         });
 
         buttonAddNewEntry.setOnClickListener(this);
+
+        imageButtonRoofDamageEdit.setOnClickListener(this);
+        imageButtonWindowsDamageEdit.setOnClickListener(this);
+        imageButtonWallsDamageEdit.setOnClickListener(this);
 
         imageButtonAttachPhoto.setOnClickListener(this);
 
@@ -190,12 +206,44 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                 setMiniGalleryButtonResource(photoFileIO.getLatestUri());
             }
         }
+
+        if(resultCode == RESULT_OK && requestCode == 7){
+            assert data != null;
+            componentToDmgDescriptions.put("roofDmg", data.getStringExtra("result"));
+        }
+        if(resultCode == RESULT_OK && requestCode == 8){
+            assert data != null;
+            componentToDmgDescriptions.put("windowsDmg", data.getStringExtra("result"));
+        }
+        if(resultCode == RESULT_OK && requestCode == 9){
+            assert data != null;
+            componentToDmgDescriptions.put("wallsDmg", data.getStringExtra("result"));
+        }
     }
 
     private void goToGalleryActivity(){
         Intent galleryIntent = new Intent(AddNewEntryActivity.this, GalleryActivity.class);
         startActivity(galleryIntent);
     }
+
+    private void goToRoofDamageActivity() {
+        Intent roofDamageIntent = new Intent(AddNewEntryActivity.this, EnvelopeDamage.class);
+        roofDamageIntent.putExtra("envelopeComponent", editTextRoofDamage.getText().toString());
+        startActivityForResult(roofDamageIntent, 7);
+    }
+
+    private void goToWindowsDamageActivity() {
+        Intent windowsDamageIntent = new Intent(AddNewEntryActivity.this, EnvelopeDamage.class);
+        windowsDamageIntent.putExtra("envelopeComponent", editTextWindowsDamage.getText().toString());
+        startActivityForResult(windowsDamageIntent, 8);
+    }
+
+    private void goToWallsDamageActivity() {
+        Intent wallsDamageIntent = new Intent(AddNewEntryActivity.this, EnvelopeDamage.class);
+        wallsDamageIntent.putExtra("envelopeComponent", editTextWallsDamage.getText().toString());
+        startActivityForResult(wallsDamageIntent, 9);
+    }
+
 
     @Override
     public void onClick(View view) {
@@ -207,9 +255,17 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         } else
         if(view.getId() == R.id.image_button_MiniGallery){
             goToGalleryActivity();
+        } else
+        if(view.getId() == R.id.image_button_RoofDamageEdit){
+            goToRoofDamageActivity();
+        } else
+        if(view.getId() == R.id.image_button_WindowsDamageEdit){
+            goToWindowsDamageActivity();
+        } else
+        if(view.getId() == R.id.image_button_WallsDamageEdit){
+            goToWallsDamageActivity();
         }
     }
-
 
 
     @Override

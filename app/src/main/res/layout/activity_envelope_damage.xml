@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="activities.activity_envelope_damage.activity_envelope_damage">
+    tools:context="activities.activity_envelope_damage.EnvelopeDamage">
 
     <TextView
         android:id="@+id/text_view_EnvelopeComponent"

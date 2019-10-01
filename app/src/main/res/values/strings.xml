@@ -6,4 +6,7 @@
     <string name="photoReferencePrefix">photos_for_id_</string>
     <string name="attached_photos">Attached Photos</string>
     <string name="selection_count">0</string>
+    <string name="roof_damage">Roof Damage</string>
+    <string name="windows_damage">Windows Damage</string>
+    <string name="walls_damage">Walls Damage</string>
 </resources>

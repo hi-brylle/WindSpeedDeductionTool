@@ -13,11 +13,10 @@ import android.widget.TextView;
 
 import com.example.windspeeddeductiontool.R;
 
-public class activity_envelope_damage extends AppCompatActivity {
+public class EnvelopeDamage extends AppCompatActivity {
 
     private RadioGroup radioGroupEnvelopeDmg;
     private Button buttonOkay;
-    private TextView textViewEnvelopeComponent;
     String envelopeComponent;
 
     @Override
@@ -25,7 +24,7 @@ public class activity_envelope_damage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_envelope_damage);
 
-        textViewEnvelopeComponent = findViewById(R.id.text_view_EnvelopeComponent);
+        TextView textViewEnvelopeComponent = findViewById(R.id.text_view_EnvelopeComponent);
 
         Intent intent = getIntent();
         envelopeComponent = intent.getExtras().getString("envelopeComponent");
@@ -40,7 +39,7 @@ public class activity_envelope_damage extends AppCompatActivity {
         final String[] envelopeComponentDamage = new String[1];
 
         radioGroupEnvelopeDmg = findViewById(R.id.radio_group_EnvelopeDamage);
-        buttonOkay.findViewById(R.id.button_ConfirmDamage);
+        buttonOkay = findViewById(R.id.button_ConfirmDamage);
 
         toggleConfirmButtonOnOff();
 
@@ -59,7 +58,7 @@ public class activity_envelope_damage extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent returnIntent = new Intent();
-                returnIntent.setData(Uri.parse(envelopeComponentDamage[0]));
+                returnIntent.putExtra("result", envelopeComponentDamage[0]);
                 setResult(RESULT_OK, returnIntent);
                 finish();
             }
