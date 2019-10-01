@@ -77,6 +77,10 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         editTextWindowsDamage = findViewById(R.id.edit_text_WindowsDamage);
         editTextWallsDamage = findViewById(R.id.edit_text_WallsDamage);
 
+        editTextRoofDamage.setEnabled(false);
+        editTextWindowsDamage.setEnabled(false);
+        editTextWallsDamage.setEnabled(false);
+
         toggleAddNewButtonOnOff();
         //TODO: make the gps fix listener listen only on the first fix
         mPresenter.addGPSFixListener(new IGPSFixListener() {
@@ -210,14 +214,20 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         if(resultCode == RESULT_OK && requestCode == 7){
             assert data != null;
             componentToDmgDescriptions.put("roofDmg", data.getStringExtra("result"));
+            editTextRoofDamage.setText(componentToDmgDescriptions.get("roofDmg"));
+            Log.d("MY TAG", "roof " + componentToDmgDescriptions.get("roofDmg"));
         }
         if(resultCode == RESULT_OK && requestCode == 8){
             assert data != null;
             componentToDmgDescriptions.put("windowsDmg", data.getStringExtra("result"));
+            editTextWindowsDamage.setText(componentToDmgDescriptions.get("windowsDmg"));
+            Log.d("MY TAG", "windows " + componentToDmgDescriptions.get("windowsDmg"));
         }
         if(resultCode == RESULT_OK && requestCode == 9){
             assert data != null;
             componentToDmgDescriptions.put("wallsDmg", data.getStringExtra("result"));
+            editTextWallsDamage.setText(componentToDmgDescriptions.get("wallsDmg"));
+            Log.d("MY TAG", "walls " + componentToDmgDescriptions.get("wallsDmg"));
         }
     }
 
@@ -228,19 +238,19 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
     private void goToRoofDamageActivity() {
         Intent roofDamageIntent = new Intent(AddNewEntryActivity.this, EnvelopeDamage.class);
-        roofDamageIntent.putExtra("envelopeComponent", editTextRoofDamage.getText().toString());
+        roofDamageIntent.putExtra("envelopeComponent", getString(R.string.roof_damage));
         startActivityForResult(roofDamageIntent, 7);
     }
 
     private void goToWindowsDamageActivity() {
         Intent windowsDamageIntent = new Intent(AddNewEntryActivity.this, EnvelopeDamage.class);
-        windowsDamageIntent.putExtra("envelopeComponent", editTextWindowsDamage.getText().toString());
+        windowsDamageIntent.putExtra("envelopeComponent", getString(R.string.windows_damage));
         startActivityForResult(windowsDamageIntent, 8);
     }
 
     private void goToWallsDamageActivity() {
         Intent wallsDamageIntent = new Intent(AddNewEntryActivity.this, EnvelopeDamage.class);
-        wallsDamageIntent.putExtra("envelopeComponent", editTextWallsDamage.getText().toString());
+        wallsDamageIntent.putExtra("envelopeComponent", getString(R.string.walls_damage));
         startActivityForResult(wallsDamageIntent, 9);
     }
 
