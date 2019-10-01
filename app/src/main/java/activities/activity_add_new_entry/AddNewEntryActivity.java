@@ -39,9 +39,6 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     private TextView textViewLongitude;
     private TextView textViewLatitude;
     private Button buttonAddNewEntry;
-    private ImageButton imageButtonRoofDamageEdit;
-    private ImageButton imageButtonWindowsDamageEdit;
-    private ImageButton imageButtonWallsDamageEdit;
     private EditText editTextRoofDamage;
     private EditText editTextWindowsDamage;
     private EditText editTextWallsDamage;
@@ -70,9 +67,9 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         textViewLatitude = findViewById(R.id.text_view_CurrentLatitude);
         buttonAddNewEntry = findViewById(R.id.button_AddNewEntry);
         final ImageButton imageButtonAttachPhoto = findViewById(R.id.image_button_AttachPhoto);
-        imageButtonRoofDamageEdit = findViewById(R.id.image_button_RoofDamageEdit);
-        imageButtonWindowsDamageEdit = findViewById(R.id.image_button_WindowsDamageEdit);
-        imageButtonWallsDamageEdit = findViewById(R.id.image_button_WallsDamageEdit);
+        ImageButton imageButtonRoofDamageEdit = findViewById(R.id.image_button_RoofDamageEdit);
+        ImageButton imageButtonWindowsDamageEdit = findViewById(R.id.image_button_WindowsDamageEdit);
+        ImageButton imageButtonWallsDamageEdit = findViewById(R.id.image_button_WallsDamageEdit);
         editTextRoofDamage = findViewById(R.id.edit_text_RoofDamage);
         editTextWindowsDamage = findViewById(R.id.edit_text_WindowsDamage);
         editTextWallsDamage = findViewById(R.id.edit_text_WallsDamage);
