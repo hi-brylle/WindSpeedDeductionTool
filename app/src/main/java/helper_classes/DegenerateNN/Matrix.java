@@ -5,16 +5,8 @@ class Matrix {
     private int columns;
     private double[][] data;
 
-    int getRows() {
-        return rows;
-    }
-
-    int getColumns(){
-        return columns;
-    }
-
-    private double getDataAt(int i, int j){
-        return data[i][j];
+    Matrix(int rows, int columns){
+        setDimensions(rows, columns);
     }
 
     void setDimensions(int rows, int columns) {
@@ -30,6 +22,22 @@ class Matrix {
                 data[i][j] = source.getDataAt(i,j);
             }
         }
+    }
+
+    void setDataAt(int i, int j, double data){
+        this.data[i][j] = data;
+    }
+
+    double getDataAt(int i, int j){
+        return data[i][j];
+    }
+
+    int getRows() {
+        return rows;
+    }
+
+    int getColumns(){
+        return columns;
     }
 
 }
