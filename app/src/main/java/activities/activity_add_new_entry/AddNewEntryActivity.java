@@ -210,19 +210,19 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
         if(resultCode == RESULT_OK && requestCode == 7){
             assert data != null;
-            componentToDmgDescriptions.put("roofDmg", data.getStringExtra("result"));
+            componentToDmgDescriptions.put("roofDmg", getResources().getString(R.string.roof_damage) + ": " + data.getStringExtra("result"));
             editTextRoofDamage.setText(componentToDmgDescriptions.get("roofDmg"));
             Log.d("MY TAG", "roof " + componentToDmgDescriptions.get("roofDmg"));
         }
         if(resultCode == RESULT_OK && requestCode == 8){
             assert data != null;
-            componentToDmgDescriptions.put("windowsDmg", data.getStringExtra("result"));
+            componentToDmgDescriptions.put("windowsDmg", getResources().getString(R.string.windows_damage) + ": " + data.getStringExtra("result"));
             editTextWindowsDamage.setText(componentToDmgDescriptions.get("windowsDmg"));
             Log.d("MY TAG", "windows " + componentToDmgDescriptions.get("windowsDmg"));
         }
         if(resultCode == RESULT_OK && requestCode == 9){
             assert data != null;
-            componentToDmgDescriptions.put("wallsDmg", data.getStringExtra("result"));
+            componentToDmgDescriptions.put("wallsDmg", getResources().getString(R.string.walls_damage) + ": " + data.getStringExtra("result"));
             editTextWallsDamage.setText(componentToDmgDescriptions.get("wallsDmg"));
             Log.d("MY TAG", "walls " + componentToDmgDescriptions.get("wallsDmg"));
         }
