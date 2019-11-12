@@ -13,7 +13,7 @@ class Matrix {
         return columns;
     }
 
-    double getDataAt(int i, int j){
+    private double getDataAt(int i, int j){
         return data[i][j];
     }
 
