@@ -9,9 +9,9 @@ public class Layer {
     Layer(){}
 
     void setLayerSize(int numberNodes, double bias){
-        weightedInputs.setDimensions(numberNodes, 1);
-        activations.setDimensions(numberNodes, 1);
-        errors.setDimensions(numberNodes, 1);
+        weightedInputs = new Matrix(numberNodes, 1);
+        activations = new Matrix(numberNodes, 1);
+        errors = new Matrix(numberNodes, 1);
         layerBias = bias;
     }
     int getLayerSize(){

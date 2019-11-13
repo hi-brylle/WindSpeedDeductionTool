@@ -4,6 +4,7 @@ import android.content.res.AssetManager;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 class Matrix {
     private int rows;
@@ -14,7 +15,7 @@ class Matrix {
         setDimensions(rows, columns);
     }
 
-    void setDimensions(int rows, int columns) {
+    private void setDimensions(int rows, int columns) {
         this.rows = rows;
         this.columns = columns;
 
@@ -92,15 +93,11 @@ class Matrix {
         return C;
     }
 
-    static Matrix readFromAssets(int prefixedRows, int prefixedColumns, AssetManager assetManager, String filename){
+    static Matrix readFromAssets(int prefixedRows, int prefixedColumns, AssetManager assetManager, String filename) throws IOException {
         Matrix A = new Matrix(prefixedRows, prefixedColumns);
 
-        DataInputStream dataInputStream = null;
-        try {
-            dataInputStream = (DataInputStream) assetManager.open(filename);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        InputStream is = assetManager.open(filename);
+        DataInputStream dataInputStream = new DataInputStream(is);
         for(int i = 0; i < A.getRows(); i++){
             for(int j = 0; j < A.getColumns(); j++){
                 double data = 0;
@@ -114,6 +111,7 @@ class Matrix {
         }
         try {
             dataInputStream.close();
+            is.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

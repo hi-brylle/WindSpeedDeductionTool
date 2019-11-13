@@ -1,5 +1,7 @@
 package helper_classes.DegenerateNN;
 
-public interface IDegenerateANN {
+import java.util.HashMap;
 
+public interface IDegenerateANN {
+    int predictDOD(HashMap<String, String> componentToDmgDescriptions);
 }

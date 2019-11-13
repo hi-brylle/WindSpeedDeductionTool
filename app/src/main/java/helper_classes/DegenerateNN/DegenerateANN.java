@@ -3,9 +3,10 @@ package helper_classes.DegenerateNN;
 import android.content.Context;
 import android.content.res.AssetManager;
 
-import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DegenerateANN implements IDegenerateANN {
     private AssetManager assetManager;
@@ -44,17 +45,17 @@ public class DegenerateANN implements IDegenerateANN {
         return a;
     }
 
-    private ArrayList<Double> getMetas() throws IOException {
-        ArrayList<Double> meta = new ArrayList<>();
+    private ArrayList<Integer> getMetas() throws IOException {
+        ArrayList<Integer> meta = new ArrayList<>();
 
-        DataInputStream dataInputStream = (DataInputStream) assetManager.open(DegenerateANN.networkName + "_meta.txt");
+        InputStream inputStream = assetManager.open(DegenerateANN.networkName + "_meta.txt");
 
-        while(dataInputStream.available() != 0){
-            double data = dataInputStream.readDouble();
-            meta.add(data);
+        while(inputStream.available() != 0){
+            int metadata = inputStream.read();
+            meta.add(metadata);
         }
 
-        dataInputStream.close();
+        inputStream.close();
 
         return meta;
     }
@@ -62,19 +63,19 @@ public class DegenerateANN implements IDegenerateANN {
     public DegenerateANN(Context context){
         /* read meta file */
         assetManager = context.getAssets();
-        ArrayList<Double> meta = null;
+        ArrayList<Integer> meta = null;
         try {
             meta = getMetas();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        int numInputs = meta.get(0).intValue();
-        int numOutputs = meta.get(meta.size() - 3).intValue();
-        int flag = meta.get(meta.size()- 2).intValue();
+        int numInputs = meta.get(0);
+        int numOutputs = meta.get(meta.size() - 3);
+        int flag = meta.get(meta.size() - 2);
         double learningRate = meta.get(meta.size() - 1);
         ArrayList<Integer> numNodesPerHiddenLayer = new ArrayList<>();
         for(int i = 1; i < meta.size() - 3; i++){
-            numNodesPerHiddenLayer.add(meta.get(i).intValue());
+            numNodesPerHiddenLayer.add(meta.get(i));
         }
 
         /* construct ANN */
@@ -110,10 +111,14 @@ public class DegenerateANN implements IDegenerateANN {
         this.learningRate = learningRate;
 
         /* useless comment here */
-        autoTrain();
+        try {
+            autoTrain();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void autoTrain(){
+    private void autoTrain() throws IOException {
         for(int i = 0; i < weightLayers.size(); i++){
             String trainedWeightsFilename = networkName + "_weightLayer" + i + "Weights.txt";
             String trainedBiasesFilename = networkName + "_weightLayer" + i + "Biases.txt";
@@ -133,7 +138,7 @@ public class DegenerateANN implements IDegenerateANN {
         }
     }
 
-    public Matrix feedforward(double[] inputs){
+    private Matrix feedforward(double[] inputs){
         /* convert input array to type Matrix */
         Matrix inputVector = new Matrix(layers.get(inputLayerIndex).getLayerSize(), 1);
         for(int i = 0; i < inputVector.getRows(); i++){
@@ -161,6 +166,57 @@ public class DegenerateANN implements IDegenerateANN {
 
         /* output of one forward pass is the activations of the output layer, duh */
         return layers.get(outputLayerIndex).getActivations();
+    }
+
+    private double convertDescription(String envelopeComponentDmg) {
+        int score;
+        switch (envelopeComponentDmg){
+            case "minimal":
+                score = 1;
+                break;
+            case "moderate":
+                score = 2;
+                break;
+            case "severe":
+                score = 3;
+                break;
+            case "total":
+                score = 4;
+                break;
+            case "none":
+            default:
+                score = 0;
+                break;
+        }
+
+        return score;
+    }
+
+    private double[] convertDescriptions(HashMap<String, String> componentToDmgDescriptions) {
+        double[] inputs = new double[3];
+
+        inputs[0] = convertDescription(componentToDmgDescriptions.get("roofDmg"));
+        inputs[1] = convertDescription(componentToDmgDescriptions.get("windowsDmg"));
+        inputs[2] = convertDescription(componentToDmgDescriptions.get("wallsDmg"));
+
+        return inputs;
+    }
+
+    @Override
+    public int predictDOD(HashMap<String, String> componentToDmgDescriptions) {
+        double[] inputs = convertDescriptions(componentToDmgDescriptions);
+        Matrix prediction = feedforward(inputs);
+        double max = prediction.getDataAt(0,0);
+        int maxIndex = 0;
+        for(int i = 1; i < prediction.getRows(); i++){
+            if(prediction.getDataAt(i,0) > max){
+                max = prediction.getDataAt(i,0);
+                maxIndex = i;
+            }
+
+        }
+
+        return maxIndex + 1;
     }
 
 }
