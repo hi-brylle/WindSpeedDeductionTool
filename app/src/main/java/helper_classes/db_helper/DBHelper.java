@@ -22,6 +22,7 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
     private static final String COLUMN_ROOF_DAMAGE = "roof_damage";
     private static final String COLUMN_WINDOWS_DAMAGE = "windows_damage";
     private static final String COLUMN_WALLS_DAMAGE = "wall_damage";
+    private static final String COLUMN_DOD = "dod";
     private static final String COLUMN_FILEPATHS_TABLE_NAME = "filepaths_table_name";
     private static final String COLUMN_FILEPATHS = "filepaths";
 
@@ -40,6 +41,7 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
                 COLUMN_ROOF_DAMAGE + " TEXT," +
                 COLUMN_WINDOWS_DAMAGE + " TEXT," +
                 COLUMN_WALLS_DAMAGE + " TEXT," +
+                COLUMN_DOD + " INTEGER," +
                 COLUMN_FILEPATHS_TABLE_NAME + " TEXT" +
                 ")";
 
@@ -52,10 +54,10 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
         onCreate(db);
     }
 
-    private boolean insert(double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg){
+    private boolean insert(double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg, int dod){
         SQLiteDatabase db = this.getWritableDatabase();
 
-        ContentValues cv = fillContentValues(longitude, latitude, roofDmg, windowsDmg, wallsDmg);
+        ContentValues cv = fillContentValues(longitude, latitude, roofDmg, windowsDmg, wallsDmg, dod);
 
         long result = db.insert(TABLE_NAME_INPUTS, null, cv);
 
@@ -89,7 +91,7 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
         return true;
     }
 
-    private ContentValues fillContentValues(double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg){
+    private ContentValues fillContentValues(double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg, int dod){
         ContentValues cv = new ContentValues();
 
         long currentTime = System.currentTimeMillis();
@@ -100,6 +102,7 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
         cv.put(COLUMN_ROOF_DAMAGE, roofDmg);
         cv.put(COLUMN_WINDOWS_DAMAGE, windowsDmg);
         cv.put(COLUMN_WALLS_DAMAGE, wallsDmg);
+        cv.put(COLUMN_DOD, dod);
 
         if(isEntriesTableEmpty()){
             cv.put(COLUMN_FILEPATHS_TABLE_NAME, "photos_for_id_1");
@@ -189,12 +192,12 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
     }
 
     @Override
-    public boolean insertToDB(double longitude, double latitude, HashMap<String, String> componentToDmgDescriptions) {
+    public boolean insertToDB(double longitude, double latitude, HashMap<String, String> componentToDmgDescriptions, int dod) {
         String roofDmg = componentToDmgDescriptions.get("roofDmg");
         String windowsDmg = componentToDmgDescriptions.get("windowsDmg");
         String wallsDmg = componentToDmgDescriptions.get("wallsDmg");
 
-        return insert(longitude, latitude, roofDmg, windowsDmg, wallsDmg);
+        return insert(longitude, latitude, roofDmg, windowsDmg, wallsDmg, dod);
     }
 
     @Override
