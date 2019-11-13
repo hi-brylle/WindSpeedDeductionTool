@@ -11,7 +11,7 @@ public class Weights {
         biases = new Matrix(followingLayerSize, 1);
     }
 
-    public void setWeights(Matrix trainedWeights){
+    void setWeights(Matrix trainedWeights){
         weights.copyFrom(trainedWeights);
     }
 

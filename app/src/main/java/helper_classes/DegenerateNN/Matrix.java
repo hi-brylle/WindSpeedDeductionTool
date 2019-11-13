@@ -1,5 +1,10 @@
 package helper_classes.DegenerateNN;
 
+import android.content.res.AssetManager;
+
+import java.io.DataInputStream;
+import java.io.IOException;
+
 class Matrix {
     private int rows;
     private int columns;
@@ -36,7 +41,7 @@ class Matrix {
         return rows;
     }
 
-    private int getColumns(){
+    int getColumns(){
         return columns;
     }
 
@@ -85,6 +90,35 @@ class Matrix {
         }
 
         return C;
+    }
+
+    static Matrix readFromAssets(int prefixedRows, int prefixedColumns, AssetManager assetManager, String filename){
+        Matrix A = new Matrix(prefixedRows, prefixedColumns);
+
+        DataInputStream dataInputStream = null;
+        try {
+            dataInputStream = (DataInputStream) assetManager.open(filename);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        for(int i = 0; i < A.getRows(); i++){
+            for(int j = 0; j < A.getColumns(); j++){
+                double data = 0;
+                try {
+                    data = dataInputStream.readDouble();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                A.setDataAt(i,j,data);
+            }
+        }
+        try {
+            dataInputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return A;
     }
 
 }

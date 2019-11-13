@@ -27,6 +27,7 @@ import java.util.HashMap;
 
 import activities.activity_envelope_damage.EnvelopeDamage;
 import activities.activity_gallery.GalleryActivity;
+import helper_classes.DegenerateNN.DegenerateANN;
 import helper_classes.db_helper.DBHelper;
 import helper_classes.photo_manager.CameraRequest;
 import helper_classes.photo_manager.PhotoFileIO;
@@ -54,7 +55,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_new_entry);
 
-        mPresenter = new AddNewEntryActivityPresenter(this, new DBHelper(this));
+        mPresenter = new AddNewEntryActivityPresenter(this, new DBHelper(this), new DegenerateANN(this));
         cameraRequest = new CameraRequest(this);
         photoFileIO = new PhotoFileIO(this);
     }

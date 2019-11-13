@@ -1,13 +1,21 @@
 package helper_classes.DegenerateNN;
 
+import android.content.Context;
+import android.content.res.AssetManager;
+
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
-public class DegenerateANN {
+public class DegenerateANN implements IDegenerateANN {
+    private AssetManager assetManager;
+    private static final String networkName = "dod_ANN";
+
     private ArrayList<Layer> layers;
     private ArrayList<Weights> weightLayers;
     private int inputLayerIndex;
     private int outputLayerIndex;
-    private double learningRate;
+    private double learningRate; /* shhh, not gonna use this but, we might add a learning module later */
     private int nnType;
 
     private double sigmoid(double x){
@@ -36,16 +44,43 @@ public class DegenerateANN {
         return a;
     }
 
-    /*public static ArrayList<Double> getMetas(String networkName){
+    private ArrayList<Double> getMetas() throws IOException {
+        ArrayList<Double> meta = new ArrayList<>();
 
-    }*/
+        DataInputStream dataInputStream = (DataInputStream) assetManager.open(DegenerateANN.networkName + "_meta.txt");
 
-    public DegenerateANN(int numInputs, ArrayList<Integer> numNodesPerHiddenLayer, int numOutputs, int flag, double learningRate){
+        while(dataInputStream.available() != 0){
+            double data = dataInputStream.readDouble();
+            meta.add(data);
+        }
+
+        dataInputStream.close();
+
+        return meta;
+    }
+
+    public DegenerateANN(Context context){
+        /* read meta file */
+        assetManager = context.getAssets();
+        ArrayList<Double> meta = null;
+        try {
+            meta = getMetas();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        int numInputs = meta.get(0).intValue();
+        int numOutputs = meta.get(meta.size() - 3).intValue();
+        int flag = meta.get(meta.size()- 2).intValue();
+        double learningRate = meta.get(meta.size() - 1);
+        ArrayList<Integer> numNodesPerHiddenLayer = new ArrayList<>();
+        for(int i = 1; i < meta.size() - 3; i++){
+            numNodesPerHiddenLayer.add(meta.get(i).intValue());
+        }
+
+        /* construct ANN */
         int totalNumLayers = 1 /* input layer*/ + numNodesPerHiddenLayer.size() /* # hidden layers */ + 1 /* output layer */;
-
         inputLayerIndex = 0;
         outputLayerIndex = totalNumLayers - 1;
-
         layers = new ArrayList<>();
         for(int l = 0, h = 0; l < totalNumLayers; l++){
             if(l == inputLayerIndex){
@@ -65,21 +100,38 @@ public class DegenerateANN {
                 h++;
             }
         }
-
         weightLayers = new ArrayList<>();
         for(int l = 0; l < totalNumLayers - 1; l++){
             Weights weights = new Weights();
             weights.initialize(layers.get(l + 1).getLayerSize(), layers.get(l).getLayerSize());
             weightLayers.add(weights);
         }
-
         nnType = flag;
         this.learningRate = learningRate;
+
+        /* useless comment here */
+        autoTrain();
     }
 
-    /*public void autoTrain(String networkName){
+    private void autoTrain(){
+        for(int i = 0; i < weightLayers.size(); i++){
+            String trainedWeightsFilename = networkName + "_weightLayer" + i + "Weights.txt";
+            String trainedBiasesFilename = networkName + "_weightLayer" + i + "Biases.txt";
 
-    }*/
+            Matrix trainedWeights = Matrix.readFromAssets(weightLayers.get(i).getWeights().getRows(),
+                                    weightLayers.get(i).getWeights().getColumns(),
+                                    assetManager,
+                                    trainedWeightsFilename);
+
+            Matrix trainedBiases = Matrix.readFromAssets(weightLayers.get(i).getBiases().getRows(),
+                                    weightLayers.get(i).getBiases().getColumns(),
+                                    assetManager,
+                                    trainedBiasesFilename);
+
+            weightLayers.get(i).setWeights(trainedWeights);
+            weightLayers.get(i).setBiases(trainedBiases);
+        }
+    }
 
     public Matrix feedforward(double[] inputs){
         /* convert input array to type Matrix */

@@ -6,22 +6,22 @@ public class Layer {
     private Matrix errors;
     private double layerBias;
 
-    public Layer(){}
+    Layer(){}
 
-    public void setLayerSize(int numberNodes, double bias){
+    void setLayerSize(int numberNodes, double bias){
         weightedInputs.setDimensions(numberNodes, 1);
         activations.setDimensions(numberNodes, 1);
         errors.setDimensions(numberNodes, 1);
         layerBias = bias;
     }
-    public int getLayerSize(){
+    int getLayerSize(){
         return activations.getRows();
     }
 
-    public void setActivations(Matrix activations){
+    void setActivations(Matrix activations){
         this.activations.copyFrom(activations);
     }
-    public void setWeightedInputs(Matrix weightedInputs){
+    void setWeightedInputs(Matrix weightedInputs){
         this.weightedInputs.copyFrom(weightedInputs);
     }
     public void setErrors(Matrix errors){
@@ -32,7 +32,7 @@ public class Layer {
         return weightedInputs;
     }
 
-    public Matrix getActivations() {
+    Matrix getActivations() {
         return activations;
     }
 
@@ -40,7 +40,7 @@ public class Layer {
         return errors;
     }
 
-    public double getLayerBias() {
+    double getLayerBias() {
         return layerBias;
     }
 }

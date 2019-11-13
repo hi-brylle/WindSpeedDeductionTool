@@ -2,12 +2,14 @@ package activities.activity_add_new_entry;
 
 import java.util.HashMap;
 
+import helper_classes.DegenerateNN.IDegenerateANN;
 import helper_classes.db_helper.IDBHelper;
 
 public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAddNewEntryActivityPresenter {
     private IAddNewEntryActivityMVP.IAddNewEntryActivityView mvpView;
     private IAddNewEntryActivityMVP.IAddNewEntryActivityModel mvpModel;
     private IDBHelper dbHelper;
+    private IDegenerateANN degenerateANN;
 
     private IGPSFixListener gpsFixListener;
 
@@ -17,9 +19,11 @@ public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAd
     private Double latitude;
 
     AddNewEntryActivityPresenter(IAddNewEntryActivityMVP.IAddNewEntryActivityView mvpView,
-                                 IDBHelper dbHelper){
+                                 IDBHelper dbHelper,
+                                 IDegenerateANN degenerateANN){
         this.mvpView = mvpView;
         this.dbHelper = dbHelper;
+        this.degenerateANN = degenerateANN;
     }
 
     @Override
