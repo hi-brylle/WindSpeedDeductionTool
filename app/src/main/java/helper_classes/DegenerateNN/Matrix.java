@@ -1,10 +1,13 @@
 package helper_classes.DegenerateNN;
 
 import android.content.res.AssetManager;
+import android.util.Log;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 class Matrix {
     private int rows;
@@ -96,25 +99,25 @@ class Matrix {
     static Matrix readFromAssets(int prefixedRows, int prefixedColumns, AssetManager assetManager, String filename) throws IOException {
         Matrix A = new Matrix(prefixedRows, prefixedColumns);
 
-        InputStream is = assetManager.open(filename);
-        DataInputStream dataInputStream = new DataInputStream(is);
+        DataInputStream dis = new DataInputStream(assetManager.open(filename));
+        Scanner sc = new Scanner(dis);
+
+        ArrayList<Double> tempArray = new ArrayList<>();
+        while(sc.hasNextDouble()){
+            double tempData = sc.nextDouble();
+            tempArray.add(tempData);
+        }
+
         for(int i = 0; i < A.getRows(); i++){
             for(int j = 0; j < A.getColumns(); j++){
-                double data = 0;
-                try {
-                    data = dataInputStream.readDouble();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                A.setDataAt(i,j,data);
+                double date /* LOL, with who? */ = tempArray.get(A.getColumns() * i + j);
+                Log.d("MY TAG", "current read from text files: " + date);
+                A.setDataAt(i,j,date);
             }
         }
-        try {
-            dataInputStream.close();
-            is.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        sc.close();
+        dis.close();
 
         return A;
     }

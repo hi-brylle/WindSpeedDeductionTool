@@ -2,11 +2,14 @@ package helper_classes.DegenerateNN;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.util.Log;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class DegenerateANN implements IDegenerateANN {
     private AssetManager assetManager;
@@ -16,7 +19,6 @@ public class DegenerateANN implements IDegenerateANN {
     private ArrayList<Weights> weightLayers;
     private int inputLayerIndex;
     private int outputLayerIndex;
-    private double learningRate; /* shhh, not gonna use this but, we might add a learning module later */
     private int nnType;
 
     private double sigmoid(double x){
@@ -48,14 +50,17 @@ public class DegenerateANN implements IDegenerateANN {
     private ArrayList<Integer> getMetas() throws IOException {
         ArrayList<Integer> meta = new ArrayList<>();
 
-        InputStream inputStream = assetManager.open(DegenerateANN.networkName + "_meta.txt");
+        DataInputStream dis = new DataInputStream(assetManager.open(networkName + "_meta.txt"));
+        Scanner sc = new Scanner(dis);
 
-        while(inputStream.available() != 0){
-            int metadata = inputStream.read();
+        while(sc.hasNextInt()){
+            int metadata = sc.nextInt();
+            Log.d("MY TAG", "current read: " + metadata);
             meta.add(metadata);
         }
 
-        inputStream.close();
+        sc.close();
+        dis.close();
 
         return meta;
     }
@@ -70,11 +75,10 @@ public class DegenerateANN implements IDegenerateANN {
             e.printStackTrace();
         }
         int numInputs = meta.get(0);
-        int numOutputs = meta.get(meta.size() - 3);
-        int flag = meta.get(meta.size() - 2);
-        double learningRate = meta.get(meta.size() - 1);
+        int numOutputs = meta.get(meta.size() - 2);
+        int flag = meta.get(meta.size() - 1);
         ArrayList<Integer> numNodesPerHiddenLayer = new ArrayList<>();
-        for(int i = 1; i < meta.size() - 3; i++){
+        for(int i = 1; i < meta.size() - 2; i++){
             numNodesPerHiddenLayer.add(meta.get(i));
         }
 
@@ -108,9 +112,8 @@ public class DegenerateANN implements IDegenerateANN {
             weightLayers.add(weights);
         }
         nnType = flag;
-        this.learningRate = learningRate;
 
-        /* useless comment here */
+        /* commenting to uh, separate the following functionality from the rest */
         try {
             autoTrain();
         } catch (IOException e) {

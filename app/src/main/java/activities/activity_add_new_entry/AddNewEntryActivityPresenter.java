@@ -37,6 +37,8 @@ public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAd
 
     @Override
     public boolean passDataToDBHelper(HashMap<String, String> componentToDmgDescriptions) {
+        int dod = degenerateANN.predictDOD(componentToDmgDescriptions);
+        mvpView.toastSomething("dod: " + dod);
         return dbHelper.insertToDB(longitude, latitude, componentToDmgDescriptions);
     }
 
