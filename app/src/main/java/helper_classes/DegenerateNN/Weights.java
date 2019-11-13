@@ -6,18 +6,23 @@ public class Weights {
 
     Weights(){}
 
-    void initialize(int followingLayerSize, int precedingLayerSize/*, Matrix trainedWeights, Matrix trainedBiases*/){
-        weights.setDimensions(followingLayerSize, precedingLayerSize);
-        biases.setDimensions(followingLayerSize, 1);
-
-        /*weights.copyFrom(trainedWeights);
-        biases.copyFrom(trainedBiases);*/
+    void initialize(int followingLayerSize, int precedingLayerSize){
+        weights = new Matrix(followingLayerSize, precedingLayerSize);
+        biases = new Matrix(followingLayerSize, 1);
     }
 
-    public Matrix getWeights() {
+    public void setWeights(Matrix trainedWeights){
+        weights.copyFrom(trainedWeights);
+    }
+
+    public void setBiases(Matrix trainedBiases){
+        biases.copyFrom(trainedBiases);
+    }
+
+    Matrix getWeights() {
         return weights;
     }
-    public Matrix getBiases() {
+    Matrix getBiases() {
         return biases;
     }
 }

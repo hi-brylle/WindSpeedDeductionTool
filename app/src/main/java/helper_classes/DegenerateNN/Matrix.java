@@ -36,8 +36,55 @@ class Matrix {
         return rows;
     }
 
-    int getColumns(){
+    private int getColumns(){
         return columns;
+    }
+
+    static Matrix add(Matrix A, Matrix B){
+        Matrix C;
+        if(A.getRows() == B.getRows() && A.getColumns() == B.getColumns()){
+            C = new Matrix(A.getRows(), A.getColumns());
+            for(int i = 0; i < C.getRows(); i++){
+                for(int j = 0; j < C.getColumns(); j++){
+                    C.setDataAt(i,j, A.getDataAt(i,j) + B.getDataAt(i,j));
+                }
+            }
+        } else{
+            C = new Matrix(0,0);
+        }
+
+        return C;
+    }
+
+    static Matrix multiply(Matrix A, Matrix B){
+        Matrix C;
+        if(A.getColumns() == B.getRows()){
+            C = new Matrix(A.getRows(), B.getColumns());
+            for(int i = 0; i < C.getRows(); i++){
+                for(int j = 0; j < C.getColumns(); j++){
+                    double s = 0.0;
+                    for(int k = 0; k < A.getColumns(); k++){
+                        s += A.getDataAt(i,k) * B.getDataAt(k,j);
+                    }
+                    C.setDataAt(i,j,s);
+                }
+            }
+        } else{
+            C = new Matrix(0,0);
+        }
+
+        return C;
+    }
+
+    static Matrix multiply(double d, Matrix A){
+        Matrix C = new Matrix(A.getRows(), A.getColumns());
+        for(int i = 0; i < C.getRows(); i++){
+            for(int j = 0; j < C.getColumns(); j++){
+                C.setDataAt(i,j, d * A.getDataAt(i,j));
+            }
+        }
+
+        return C;
     }
 
 }
