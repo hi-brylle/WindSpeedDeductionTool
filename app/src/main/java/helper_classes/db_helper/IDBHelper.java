@@ -5,7 +5,7 @@ import android.database.Cursor;
 import java.util.HashMap;
 
 public interface IDBHelper {
-    boolean insertToDB(double longitude, double latitude, HashMap<String, String> componentToDmgDescriptions, int dod);
+    boolean insertToDB(double longitude, double latitude, HashMap<String, String> componentToDmgDescriptions, int dod, HashMap<String, Double> windSpeeds);
     String getLatestFilepathsTableName();
     String getCurrentFilepathsTableName();
     boolean insertFilepaths(String folderName, String[] currentSetFilepaths);

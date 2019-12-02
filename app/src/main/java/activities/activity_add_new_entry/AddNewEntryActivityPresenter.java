@@ -49,7 +49,7 @@ public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAd
         mvpView.logSomething("MY TAG", "upper bound: " + windSpeeds.get("upperBound"));
         mvpView.logSomething("MY TAG", "mean: " + windSpeeds.get("mean"));
 
-        return dbHelper.insertToDB(longitude, latitude, componentToDmgDescriptions, dod);
+        return dbHelper.insertToDB(longitude, latitude, componentToDmgDescriptions, dod, windSpeeds);
     }
 
     @Override

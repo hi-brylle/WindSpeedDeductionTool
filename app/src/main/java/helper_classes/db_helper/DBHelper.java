@@ -23,6 +23,9 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
     private static final String COLUMN_WINDOWS_DAMAGE = "windows_damage";
     private static final String COLUMN_WALLS_DAMAGE = "wall_damage";
     private static final String COLUMN_DOD = "dod";
+    private static final String COLUMN_LOWER_BOUND_SPEED = "lower_bound_speed";
+    private static final String COLUMN_UPPER_BOUND_SPEED = "upper_bound_speed";
+    private static final String COLUMN_MEAN_SPEED = "mean_speed";
     private static final String COLUMN_FILEPATHS_TABLE_NAME = "filepaths_table_name";
     private static final String COLUMN_FILEPATHS = "filepaths";
 
@@ -42,6 +45,9 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
                 COLUMN_WINDOWS_DAMAGE + " TEXT," +
                 COLUMN_WALLS_DAMAGE + " TEXT," +
                 COLUMN_DOD + " INTEGER," +
+                COLUMN_LOWER_BOUND_SPEED + " REAL," +
+                COLUMN_UPPER_BOUND_SPEED + " REAL," +
+                COLUMN_MEAN_SPEED + " REAL," +
                 COLUMN_FILEPATHS_TABLE_NAME + " TEXT" +
                 ")";
 
@@ -54,10 +60,13 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
         onCreate(db);
     }
 
-    private boolean insert(double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg, int dod){
+    private boolean insert(double longitude, double latitude,
+                           String roofDmg, String windowsDmg, String wallsDmg,
+                           int dod,
+                           double lowerBound, double upperBound, double mean){
         SQLiteDatabase db = this.getWritableDatabase();
 
-        ContentValues cv = fillContentValues(longitude, latitude, roofDmg, windowsDmg, wallsDmg, dod);
+        ContentValues cv = fillContentValues(longitude, latitude, roofDmg, windowsDmg, wallsDmg, dod, lowerBound, upperBound, mean);
 
         long result = db.insert(TABLE_NAME_INPUTS, null, cv);
 
@@ -91,7 +100,10 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
         return true;
     }
 
-    private ContentValues fillContentValues(double longitude, double latitude, String roofDmg, String windowsDmg, String wallsDmg, int dod){
+    private ContentValues fillContentValues(double longitude, double latitude,
+                                            String roofDmg, String windowsDmg, String wallsDmg,
+                                            int dod,
+                                            double lowerBound, double upperBound, double mean){
         ContentValues cv = new ContentValues();
 
         long currentTime = System.currentTimeMillis();
@@ -103,6 +115,9 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
         cv.put(COLUMN_WINDOWS_DAMAGE, windowsDmg);
         cv.put(COLUMN_WALLS_DAMAGE, wallsDmg);
         cv.put(COLUMN_DOD, dod);
+        cv.put(COLUMN_LOWER_BOUND_SPEED, lowerBound);
+        cv.put(COLUMN_UPPER_BOUND_SPEED, upperBound);
+        cv.put(COLUMN_MEAN_SPEED, mean);
 
         if(isEntriesTableEmpty()){
             cv.put(COLUMN_FILEPATHS_TABLE_NAME, "photos_for_id_1");
@@ -192,12 +207,16 @@ public class DBHelper extends SQLiteOpenHelper implements IDBHelper{
     }
 
     @Override
-    public boolean insertToDB(double longitude, double latitude, HashMap<String, String> componentToDmgDescriptions, int dod) {
+    public boolean insertToDB(double longitude, double latitude, HashMap<String, String> componentToDmgDescriptions, int dod, HashMap<String, Double> windSpeeds) {
         String roofDmg = componentToDmgDescriptions.get("roofDmg");
         String windowsDmg = componentToDmgDescriptions.get("windowsDmg");
         String wallsDmg = componentToDmgDescriptions.get("wallsDmg");
 
-        return insert(longitude, latitude, roofDmg, windowsDmg, wallsDmg, dod);
+        double lowerBound = windSpeeds.get("lowerBound");
+        double upperBound = windSpeeds.get("upperBound");
+        double mean = windSpeeds.get("mean");
+
+        return insert(longitude, latitude, roofDmg, windowsDmg, wallsDmg, dod, lowerBound, upperBound, mean);
     }
 
     @Override
