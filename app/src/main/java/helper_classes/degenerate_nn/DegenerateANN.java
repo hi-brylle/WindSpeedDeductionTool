@@ -1,4 +1,4 @@
-package helper_classes.DegenerateNN;
+package helper_classes.degenerate_nn;
 
 import android.content.Context;
 import android.content.res.AssetManager;

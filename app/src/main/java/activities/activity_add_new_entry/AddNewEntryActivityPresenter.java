@@ -2,14 +2,16 @@ package activities.activity_add_new_entry;
 
 import java.util.HashMap;
 
-import helper_classes.DegenerateNN.IDegenerateANN;
+import helper_classes.degenerate_nn.IDegenerateANN;
 import helper_classes.db_helper.IDBHelper;
+import helper_classes.dod_to_wind.IDODToWindSpeed;
 
 public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAddNewEntryActivityPresenter {
     private IAddNewEntryActivityMVP.IAddNewEntryActivityView mvpView;
     private IAddNewEntryActivityMVP.IAddNewEntryActivityModel mvpModel;
     private IDBHelper dbHelper;
     private IDegenerateANN degenerateANN;
+    private IDODToWindSpeed dodToWindSpeed;
 
     private IGPSFixListener gpsFixListener;
 
@@ -20,10 +22,12 @@ public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAd
 
     AddNewEntryActivityPresenter(IAddNewEntryActivityMVP.IAddNewEntryActivityView mvpView,
                                  IDBHelper dbHelper,
-                                 IDegenerateANN degenerateANN){
+                                 IDegenerateANN degenerateANN,
+                                 IDODToWindSpeed dodToWindSpeed){
         this.mvpView = mvpView;
         this.dbHelper = dbHelper;
         this.degenerateANN = degenerateANN;
+        this.dodToWindSpeed = dodToWindSpeed;
     }
 
     @Override
@@ -39,6 +43,12 @@ public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAd
     public boolean passDataToDBHelper(HashMap<String, String> componentToDmgDescriptions) {
         int dod = degenerateANN.predictDOD(componentToDmgDescriptions);
         mvpView.logSomething("MY TAG", "DOD: " + dod);
+
+        HashMap<String, Double> windSpeeds = dodToWindSpeed.getWindSpeeds(dod);
+        mvpView.logSomething("MY TAG", "lower bound: " + windSpeeds.get("lowerBound"));
+        mvpView.logSomething("MY TAG", "upper bound: " + windSpeeds.get("upperBound"));
+        mvpView.logSomething("MY TAG", "mean: " + windSpeeds.get("mean"));
+
         return dbHelper.insertToDB(longitude, latitude, componentToDmgDescriptions, dod);
     }
 

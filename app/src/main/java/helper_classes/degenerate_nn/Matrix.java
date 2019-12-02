@@ -1,11 +1,10 @@
-package helper_classes.DegenerateNN;
+package helper_classes.degenerate_nn;
 
 import android.content.res.AssetManager;
 import android.util.Log;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
