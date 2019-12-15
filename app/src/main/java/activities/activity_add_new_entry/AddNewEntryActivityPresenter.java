@@ -37,6 +37,7 @@ public class AddNewEntryActivityPresenter implements IAddNewEntryActivityMVP.IAd
 
         //callback when long and lat are both non-null
         gpsFixListener.onGPSFix();
+        mvpView.logSomething("MY TAG", "long-lat changed");
     }
 
     @Override

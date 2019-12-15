@@ -47,6 +47,10 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
 
     private BroadcastReceiver locationBroadcastReceiver;
 
+    private boolean hasRoofDmgEntry;
+    private boolean hasWindowsDmgEntry;
+    private boolean hasWallsDmgEntry;
+
     CameraRequest cameraRequest;
     PhotoFileIO photoFileIO;
     final HashMap<String, String> componentToDmgDescriptions = new HashMap<>();
@@ -62,6 +66,10 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
                                                         new DODToWindSpeed(this));
         cameraRequest = new CameraRequest(this);
         photoFileIO = new PhotoFileIO(this);
+
+        hasRoofDmgEntry = false;
+        hasWindowsDmgEntry = false;
+        hasWallsDmgEntry = false;
     }
 
     @Override
@@ -83,12 +91,13 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         editTextWindowsDamage.setEnabled(false);
         editTextWallsDamage.setEnabled(false);
 
-        toggleAddNewButtonOnOff();
+        addNewButtonAvailability();
         //TODO: make the gps fix listener listen only on the first fix
         mPresenter.addGPSFixListener(new IGPSFixListener() {
             @Override
             public void onGPSFix() {
-                toggleAddNewButtonOnOff();
+                addNewButtonAvailability();
+                logSomething("MY TAG","GPS fix ON");
             }
         });
 
@@ -112,12 +121,17 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         imageButtonMiniGallery.setOnClickListener(this);
     }
 
-    public void toggleAddNewButtonOnOff() {
-        //TODO: the following logic is just a placeholder
-        if (!buttonAddNewEntry.isEnabled()) {
+    public void addNewButtonAvailability() {
+        logSomething("MY TAG", String.valueOf(hasRoofDmgEntry));
+        logSomething("MY TAG", String.valueOf(hasWindowsDmgEntry));
+        logSomething("MY TAG", String.valueOf(hasWallsDmgEntry));
+
+        if(hasRoofDmgEntry && hasWindowsDmgEntry && hasWallsDmgEntry){
             buttonAddNewEntry.setEnabled(true);
-        } else {
+            logSomething("MY TAG", "Add New Button ON");
+        } else{
             buttonAddNewEntry.setEnabled(false);
+            logSomething("MY TAG", "Add New Button OFF");
         }
     }
 
@@ -154,8 +168,6 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
     }
 
     private void addNewEntry(){
-        toggleAddNewButtonOnOff();
-
         boolean dataInsertSuccess = mPresenter.passDataToDBHelper(componentToDmgDescriptions);
         showToastOnDBInsert(dataInsertSuccess);
 
@@ -177,6 +189,16 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         final ImageButton imageButtonMiniGallery = findViewById(R.id.image_button_MiniGallery);
         imageButtonMiniGallery.setVisibility(View.GONE);
         imageButtonMiniGallery.setImageBitmap(null);
+
+        hasRoofDmgEntry = false;
+        hasWindowsDmgEntry = false;
+        hasWallsDmgEntry = false;
+
+        addNewButtonAvailability();
+
+        editTextRoofDamage.setText(getResources().getString(R.string.roof_damage));
+        editTextWindowsDamage.setText(getResources().getString(R.string.windows_damage));
+        editTextWallsDamage.setText(getResources().getString(R.string.walls_damage));
     }
 
     @Override
@@ -218,6 +240,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
             componentToDmgDescriptions.put("roofDmg", data.getStringExtra("result"));
             String updateDmgText = getResources().getString(R.string.roof_damage) + ": " + componentToDmgDescriptions.get("roofDmg");
             editTextRoofDamage.setText(updateDmgText);
+            hasRoofDmgEntry = true;
             Log.d("MY TAG", "roof " + componentToDmgDescriptions.get("roofDmg"));
         }
         if(resultCode == RESULT_OK && requestCode == 8){
@@ -225,6 +248,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
             componentToDmgDescriptions.put("windowsDmg", data.getStringExtra("result"));
             String updateDmgText = getResources().getString(R.string.windows_damage) + ": " + componentToDmgDescriptions.get("windowsDmg");
             editTextWindowsDamage.setText(updateDmgText);
+            hasWindowsDmgEntry = true;
             Log.d("MY TAG", "windows " + componentToDmgDescriptions.get("windowsDmg"));
         }
         if(resultCode == RESULT_OK && requestCode == 9){
@@ -232,6 +256,7 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
             componentToDmgDescriptions.put("wallsDmg", data.getStringExtra("result"));
             String updateDmgText = getResources().getString(R.string.walls_damage) + ": " + componentToDmgDescriptions.get("wallsDmg");
             editTextWallsDamage.setText(updateDmgText);
+            hasWallsDmgEntry = true;
             Log.d("MY TAG", "walls " + componentToDmgDescriptions.get("wallsDmg"));
         }
     }
@@ -298,11 +323,10 @@ public class AddNewEntryActivity extends AppCompatActivity implements IAddNewEnt
         }
         registerReceiver(locationBroadcastReceiver, new IntentFilter("location_updates"));
 
-        toggleAddNewButtonOnOff();
         mPresenter.addGPSFixListener(new IGPSFixListener() {
             @Override
             public void onGPSFix() {
-                toggleAddNewButtonOnOff();
+                addNewButtonAvailability();
             }
         });
 
